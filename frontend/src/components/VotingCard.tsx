@@ -32,7 +32,7 @@ export const VotingCard = ({ participant, onVote }: { participant: Participant; 
             animate="visible"
             exit="exit"
         >
-            <Card className="hover:shadow-lg transition-shadow">
+            <Card className="shadow-md">
                 <CardHeader className="flex flex-col items-center justify-between">
                     <CardTitle className="text-lg font-semibold">{participant.name}</CardTitle>
                     <img src="https://placehold.co/150" alt="Contestant" className="w-24 h-24 rounded-full mr-4" />

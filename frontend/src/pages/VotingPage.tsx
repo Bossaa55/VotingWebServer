@@ -1,7 +1,9 @@
 import VoteConfirmModal from "@/components/VoteConfirmModal";
 import { NavBar } from "../components/NavBar";
 import { VotingCard } from "../components/VotingCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { BackgroundShapes } from "@/components/BackgroundShapes";
+import { SplashScreen } from "@/components/SplashScreen";
 
 export const VotingPage = () => {
   const [selectedParticipant, setSelectedParticipant] = useState<{
@@ -38,30 +40,28 @@ export const VotingPage = () => {
     },
   ];
 
-  return (
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSplashVisible(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+
+    return;
+  }, [isSplashVisible]);
+
+  return isSplashVisible ? (
+    <SplashScreen />
+  ) : (
     <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">
       <NavBar />
       <div className="pt-16">
-        <img
-          src="/path1.svg"
-          className="fixed bottom-0 left-0 w-45 h-auto z-0"
-          alt="Background Path"
-        />
-        <img
-          src="/path2.svg"
-          className="fixed bottom-0 right-0 w-45 h-auto z-0"
-          alt="Background Path"
-        />
-        <img
-          src="/path3.svg"
-          className="fixed top-10 left-0 w-45 h-auto z-0"
-          alt="Background Path"
-        />
-        <img
-          src="/path4.svg"
-          className="fixed top-10 right-0 w-35 h-auto z-0"
-          alt="Background Path"
-        />
+        <BackgroundShapes />
         <div className="text-center z-10 relative">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
             {participants.map((participant) => (
@@ -80,8 +80,8 @@ export const VotingPage = () => {
           onConfirm={async () => {
             await handleVote(selectedParticipant.id);
             setSelectedParticipant(null);
-          } }
-          onClose={() => setSelectedParticipant(null)} 
+          }}
+          onClose={() => setSelectedParticipant(null)}
           isOpen={!!selectedParticipant}
         />
       )}
