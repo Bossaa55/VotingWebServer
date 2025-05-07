@@ -14,8 +14,9 @@ export const VotingPage = () => {
     // Simulate an API call to cast a vote
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.log(`Voted for participant with ID: ${id}`);
-        resolve(true);
+      console.log(`Voted for participant with ID: ${id}`);
+      resolve(true);
+      window.location.href = "/voteresult";
       }, 1000);
     });
   };
