@@ -1,11 +1,15 @@
-import { Button } from "@/components/ui/button"
- 
+import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { VotingPage } from "./pages/VotingPage";
+
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
-  )
+    <BrowserRouter>
+        <Routes>
+            <Route path="/vote" element={<VotingPage />} />
+        </Routes>
+    </BrowserRouter>
+  );
 }
- 
-export default App
+
+export default App;
