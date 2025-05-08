@@ -35,7 +35,7 @@ export const VotingCard = ({ participant, onVote }: { participant: Participant; 
             <Card className="shadow-md">
                 <CardHeader className="flex flex-col items-center justify-between">
                     <CardTitle className="text-lg font-semibold">{participant.name}</CardTitle>
-                    <img src="https://placehold.co/150" alt="Contestant" className="w-24 h-24 rounded-full mr-4" />
+                    <img src={participant.imageUrl} alt="Contestant" className="w-24 h-24 rounded-full mr-4" />
                     <CardDescription>{participant.description}</CardDescription>
                 </CardHeader>
                 <CardContent>

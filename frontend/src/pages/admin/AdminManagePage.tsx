@@ -1,3 +1,4 @@
+import { AdminNavBar } from "@/components/admin/AdminNavBar";
 import { IconCard } from "@/components/admin/IconCard";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes"
 import { NavBar } from "@/components/shared/NavBar"
@@ -8,7 +9,7 @@ const ParticipantCard = ({ participant }: { participant: Participant;}) => {
     return(
         <Card className="shadow-md w-96 z-10">
             <CardContent className="flex items-center px-4 gap-4 h-14">
-                <img src="https://placehold.co/150" alt="Contestant" className="w-auto h-full rounded-full" />
+                <img src={participant.imageUrl} alt="Contestant" className="w-auto h-full rounded-full" />
                 <div className="flex justify-between w-full">
                     <span className="text-xl">{participant.name}</span>
                     <button onClick={() => alert(`Edit ${participant.name}`)} className="text-gray-500 hover:text-gray-700">
@@ -24,14 +25,18 @@ const ParticipantCard = ({ participant }: { participant: Participant;}) => {
 
 export const AdminManagePage = () => {
     const participants = [
-        { id: "1", name: "John Doe", description: "A passionate developer." },
-        { id: "2", name: "Jane Smith", description: "An innovative designer." },
-        { id: "3", name: "Alice Johnson", description: "A creative thinker." },
+        { id: "1", name: "John Doe", description: "A passionate developer.", imageUrl: "https://www.gravatar.com/avatar/1?d=identicon", votes: Math.floor(Math.random() * 100) },
+        { id: "2", name: "Jane Smith", description: "An innovative designer.", imageUrl: "https://www.gravatar.com/avatar/2?d=identicon", votes: Math.floor(Math.random() * 100) },
+        { id: "3", name: "Alice Johnson", description: "A creative thinker.", imageUrl: "https://www.gravatar.com/avatar/3?d=identicon", votes: Math.floor(Math.random() * 100) },
+        { id: "4", name: "Bob Brown", description: "A tech enthusiast.", imageUrl: "https://www.gravatar.com/avatar/4?d=identicon", votes: Math.floor(Math.random() * 100) },
       ];
 
     return(
         <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">
-            <NavBar />
+            <AdminNavBar
+                onBack={() => window.location.href = "/admin"}
+            />
+            
             <div className="pt-16">
                 <BackgroundShapes />
                 <div className="flex flex-col gap-4 p-4">

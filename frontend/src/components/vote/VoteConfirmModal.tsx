@@ -77,7 +77,7 @@ const VoteConfirmModal: React.FC<VoteConfirmModalProps> = ({
                         <h2 className="text-center text-lg font-semibold mb-4">Confirmar Vot</h2>
                         <div className="flex flex-col items-center gap-4 mb-4">
                             <img
-                                src="https://placehold.co/150"
+                                src={participant.imageUrl}
                                 alt="Contestant"
                                 className="w-24 h-24 rounded-full"
                             />

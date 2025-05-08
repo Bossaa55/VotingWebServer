@@ -24,20 +24,16 @@ export const VotingPage = () => {
   };
 
   const participants = [
-    { id: "1", name: "John Doe", description: "A passionate developer." },
-    { id: "2", name: "Jane Smith", description: "An innovative designer." },
-    { id: "3", name: "Alice Johnson", description: "A creative thinker." },
-    { id: "4", name: "Bob Brown", description: "A tech enthusiast." },
-    { id: "5", name: "Charlie Davis", description: "A problem solver." },
-    { id: "6", name: "Diana Prince", description: "A visionary leader." },
-    { id: "7", name: "Ethan Hunt", description: "An adventurous spirit." },
-    { id: "8", name: "Fiona Apple", description: "A musical genius." },
-    { id: "9", name: "George Clooney", description: "A charismatic actor." },
-    {
-      id: "10",
-      name: "Hannah Montana",
-      description: "A multi-talented artist.",
-    },
+    { id: "1", name: "John Doe", description: "A passionate developer.", imageUrl: "https://www.gravatar.com/avatar/1?d=identicon" },
+    { id: "2", name: "Jane Smith", description: "An innovative designer.", imageUrl: "https://www.gravatar.com/avatar/2?d=identicon" },
+    { id: "3", name: "Alice Johnson", description: "A creative thinker.", imageUrl: "https://www.gravatar.com/avatar/3?d=identicon" },
+    { id: "4", name: "Bob Brown", description: "A tech enthusiast.", imageUrl: "https://www.gravatar.com/avatar/4?d=identicon" },
+    { id: "5", name: "Charlie Davis", description: "A problem solver.", imageUrl: "https://www.gravatar.com/avatar/5?d=identicon" },
+    { id: "6", name: "Diana Prince", description: "A visionary leader.", imageUrl: "https://www.gravatar.com/avatar/6?d=identicon" },
+    { id: "7", name: "Ethan Hunt", description: "An adventurous spirit.", imageUrl: "https://www.gravatar.com/avatar/7?d=identicon" },
+    { id: "8", name: "Fiona Apple", description: "A musical genius.", imageUrl: "https://www.gravatar.com/avatar/8?d=identicon" },
+    { id: "9", name: "George Clooney", description: "A charismatic actor.", imageUrl: "https://www.gravatar.com/avatar/9?d=identicon" },
+    { id: "10", name: "Hannah Montana", description: "A multi-talented artist.", imageUrl: "https://www.gravatar.com/avatar/10?d=identicon" },
   ];
 
   const [isSplashVisible, setIsSplashVisible] = useState(true);
