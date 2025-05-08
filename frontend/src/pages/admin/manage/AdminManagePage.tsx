@@ -1,5 +1,6 @@
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
 import { IconCard } from "@/components/admin/IconCard";
+import { participants } from "@/components/debug/data";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes"
 import { Card, CardContent } from "@/components/ui/card";
 import type { Participant } from "@/interface/Participant";
@@ -23,12 +24,6 @@ const ParticipantCard = ({ participant }: { participant: Participant;}) => {
 }
 
 export const AdminManagePage = () => {
-    const participants = [
-        { id: "1", name: "John Doe", description: "A passionate developer.", imageUrl: "https://www.gravatar.com/avatar/1?d=identicon", votes: Math.floor(Math.random() * 100) },
-        { id: "2", name: "Jane Smith", description: "An innovative designer.", imageUrl: "https://www.gravatar.com/avatar/2?d=identicon", votes: Math.floor(Math.random() * 100) },
-        { id: "3", name: "Alice Johnson", description: "A creative thinker.", imageUrl: "https://www.gravatar.com/avatar/3?d=identicon", votes: Math.floor(Math.random() * 100) },
-        { id: "4", name: "Bob Brown", description: "A tech enthusiast.", imageUrl: "https://www.gravatar.com/avatar/4?d=identicon", votes: Math.floor(Math.random() * 100) },
-      ];
 
     return(
         <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">

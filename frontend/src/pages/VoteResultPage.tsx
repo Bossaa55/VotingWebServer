@@ -3,12 +3,19 @@ import { NavBar } from "../components/shared/NavBar";
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
+import { useLocation } from "react-router-dom";
+import { participants } from "@/components/debug/data";
 
 
 export const VoteResultPage = () => {
   useEffect(() => {
     confetti();
   }, []);
+
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const participantId = queryParams.get("participantId");
+  const participant = participants.find((p) => p.id === participantId);
 
  return (
     <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">
@@ -28,8 +35,8 @@ export const VoteResultPage = () => {
                   </g>
                 </svg>
                 <CardDescription className="text-lg">
-                  Has votat per
-                  <p className="text-violet-500 text-xl"> Name</p>
+                  Has votat per:
+                  <p className="text-violet-500 font-medium text-xl">{participant?.name}</p>
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center gap-1">

@@ -4,6 +4,7 @@ import { VotingCard } from "@/components/vote/VotingCard";
 import { useEffect, useState } from "react";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
 import { SplashScreen } from "@/components/vote/SplashScreen";
+import { participants } from "@/components/debug/data";
 
 export const VotingPage = () => {
   const [selectedParticipant, setSelectedParticipant] = useState<{
@@ -18,23 +19,10 @@ export const VotingPage = () => {
       setTimeout(() => {
       console.log(`Voted for participant with ID: ${id}`);
       resolve(true);
-      window.location.href = "/voteresult";
+      window.location.href = `/voteresult?participantId=${id}`;
       }, 1000);
     });
   };
-
-  const participants = [
-    { id: "1", name: "John Doe", description: "A passionate developer.", imageUrl: "https://www.gravatar.com/avatar/1?d=identicon" },
-    { id: "2", name: "Jane Smith", description: "An innovative designer.", imageUrl: "https://www.gravatar.com/avatar/2?d=identicon" },
-    { id: "3", name: "Alice Johnson", description: "A creative thinker.", imageUrl: "https://www.gravatar.com/avatar/3?d=identicon" },
-    { id: "4", name: "Bob Brown", description: "A tech enthusiast.", imageUrl: "https://www.gravatar.com/avatar/4?d=identicon" },
-    { id: "5", name: "Charlie Davis", description: "A problem solver.", imageUrl: "https://www.gravatar.com/avatar/5?d=identicon" },
-    { id: "6", name: "Diana Prince", description: "A visionary leader.", imageUrl: "https://www.gravatar.com/avatar/6?d=identicon" },
-    { id: "7", name: "Ethan Hunt", description: "An adventurous spirit.", imageUrl: "https://www.gravatar.com/avatar/7?d=identicon" },
-    { id: "8", name: "Fiona Apple", description: "A musical genius.", imageUrl: "https://www.gravatar.com/avatar/8?d=identicon" },
-    { id: "9", name: "George Clooney", description: "A charismatic actor.", imageUrl: "https://www.gravatar.com/avatar/9?d=identicon" },
-    { id: "10", name: "Hannah Montana", description: "A multi-talented artist.", imageUrl: "https://www.gravatar.com/avatar/10?d=identicon" },
-  ];
 
   const [isSplashVisible, setIsSplashVisible] = useState(true);
 
