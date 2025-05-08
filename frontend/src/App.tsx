@@ -2,9 +2,9 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { VotingPage } from "./pages/VotingPage";
 import { VoteResultPage } from "./pages/VoteResultPage";
-import { AdminLoginPage } from "./pages/AdminLoginPage";
-import { AdminVoteCount } from "./pages/AdminVoteCount";
-import { AdminPage } from "./pages/AdminPage";
+import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
+import { AdminVoteCount } from "./pages/admin/AdminVoteCount";
+import { AdminPage } from "./pages/admin/AdminPage";
 
 function App() {
   return (

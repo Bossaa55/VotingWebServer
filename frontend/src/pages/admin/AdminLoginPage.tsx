@@ -41,7 +41,7 @@ export const AdminLoginPage = () => {
                         </div>
                     </form>
                 </CardContent>
-            </Card>            
+            </Card>
         </div>
     );
 }
