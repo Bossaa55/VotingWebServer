@@ -1,7 +1,6 @@
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
 import { IconCard } from "@/components/admin/IconCard";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes"
-import { NavBar } from "@/components/shared/NavBar"
 import { Card, CardContent } from "@/components/ui/card";
 import type { Participant } from "@/interface/Participant";
 
@@ -36,7 +35,7 @@ export const AdminManagePage = () => {
             <AdminNavBar
                 onBack={() => window.location.href = "/admin"}
             />
-            
+
             <div className="pt-16">
                 <BackgroundShapes />
                 <div className="flex flex-col gap-4 p-4">
@@ -52,7 +51,7 @@ export const AdminManagePage = () => {
                         icon={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" className="h-full stroke-violet-500">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>}
-                        onClick={() => window.location.href = "/admin/manage/add"} description={""}                    />
+                        onClick={() => window.location.href = "/admin/manage/create"} description={""}                    />
                 </div>
             </div>
         </div>
