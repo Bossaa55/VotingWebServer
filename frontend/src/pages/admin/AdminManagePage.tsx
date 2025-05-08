@@ -1,22 +1,8 @@
-import { BackgroundShapes } from "@/components/BackgroundShapes"
-import { NavBar } from "@/components/NavBar"
+import { IconCard } from "@/components/admin/IconCard";
+import { BackgroundShapes } from "@/components/shared/BackgroundShapes"
+import { NavBar } from "@/components/shared/NavBar"
 import { Card, CardContent } from "@/components/ui/card";
 import type { Participant } from "@/interface/Participant";
-
-const AddItemCard = ({ title, icon, onClick }: { title: string; icon: React.ReactNode; onClick: () => void }) => {
-    return (
-        <Card className="shadow-md w-96 z-10" onClick={onClick}>
-            <CardContent className="flex items-center px-4 gap-4 h-14">
-                <div className="flex items-center justify-center w-auto h-full rounded-full bg-violet-200 p-2">
-                    {icon}
-                </div>
-                <div className="h-full flex flex-col items-start justify-center gap-1">
-                    <h1 className="text-2xl font-semibold text-center">{title}</h1>
-                </div>
-            </CardContent>
-        </Card>
-    );
-  };
 
 const ParticipantCard = ({ participant }: { participant: Participant;}) => {
     return(
@@ -56,15 +42,12 @@ export const AdminManagePage = () => {
                         />
                     ))}
 
-                    <AddItemCard
+                    <IconCard
                         title="Add Contestant"
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" className="h-full stroke-violet-500">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                        }
-                        onClick={() => window.location.href = "/admin/manage/add"}
-                    />
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" className="h-full stroke-violet-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>}
+                        onClick={() => window.location.href = "/admin/manage/add"} description={""}                    />
                 </div>
             </div>
         </div>

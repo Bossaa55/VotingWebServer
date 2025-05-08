@@ -1,5 +1,5 @@
-import { BackgroundShapes } from "@/components/BackgroundShapes";
-import { NavBar } from "@/components/NavBar";
+import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
+import { NavBar } from "@/components/shared/NavBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Input: React.FC<{ type: string; name: string; placeholder: string; id: string }> = ({ type, name, placeholder, id }) => {

@@ -1,9 +1,9 @@
-import VoteConfirmModal from "@/components/VoteConfirmModal";
-import { NavBar } from "../components/NavBar";
-import { VotingCard } from "../components/VotingCard";
+import VoteConfirmModal from "@/components/vote/VoteConfirmModal";
+import { NavBar } from "../components/shared/NavBar";
+import { VotingCard } from "@/components/vote/VotingCard";
 import { useEffect, useState } from "react";
-import { BackgroundShapes } from "@/components/BackgroundShapes";
-import { SplashScreen } from "@/components/SplashScreen";
+import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
+import { SplashScreen } from "@/components/vote/SplashScreen";
 
 export const VotingPage = () => {
   const [selectedParticipant, setSelectedParticipant] = useState<{

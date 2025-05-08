@@ -1,5 +1,5 @@
 import type { Participant } from "@/interface/Participant";
-import { Card } from "./ui/card";
+import { Card } from "../ui/card";
 
 export const VoteCoutCard = ({ participant }: { participant: Participant;}) => {
     return(

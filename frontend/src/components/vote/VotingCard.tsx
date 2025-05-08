@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import type { Participant } from "@/interface/Participant";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },

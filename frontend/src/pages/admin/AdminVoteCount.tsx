@@ -1,6 +1,6 @@
-import { BackgroundShapes } from "@/components/BackgroundShapes"
-import { NavBar } from "@/components/NavBar"
-import { VoteCoutCard } from "@/components/VoteCountCard";
+import { BackgroundShapes } from "@/components/shared/BackgroundShapes"
+import { NavBar } from "@/components/shared/NavBar"
+import { VoteCoutCard } from "@/components/admin/VoteCountCard";
 
 export const AdminVoteCount = () => {
     const participants = [

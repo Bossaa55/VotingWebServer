@@ -1,8 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { NavBar } from "../components/NavBar";
+import { NavBar } from "../components/shared/NavBar";
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
-import { BackgroundShapes } from "@/components/BackgroundShapes";
+import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
 
 
 export const VoteResultPage = () => {
@@ -19,7 +19,7 @@ export const VoteResultPage = () => {
       <div className="text-center z-10 fixed top-0 size-full flex items-center justify-center h-screen">
         <Card className="shadow-md w-100">
             <CardHeader className="flex flex-col items-center justify-between gap-4">
-                <CardTitle className="text-xl font-semibold">Vot Exitós</CardTitle>
+                <CardTitle className="text-2xl font-semibold">Vot Exitós</CardTitle>
                 <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="size-32 my-5">
                   <circle fill="#05df72" cx="16" cy="16" r="14"/>
                   <circle fill="#05df72" className="bg-green-400 opacity-25" cx="16" cy="16" r="16"/>
@@ -28,8 +28,8 @@ export const VoteResultPage = () => {
                   </g>
                 </svg>
                 <CardDescription className="text-lg">
-                  Has votat per 
-                  <span className="text-violet-500"> Name</span>
+                  Has votat per
+                  <p className="text-violet-500 text-xl"> Name</p>
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center gap-1">

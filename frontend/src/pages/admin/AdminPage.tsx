@@ -1,22 +1,6 @@
-import { BackgroundShapes } from "@/components/BackgroundShapes";
-import { NavBar } from "@/components/NavBar";
-import { Card, CardContent} from "@/components/ui/card";
-
-const PageCard = ({ title, description, icon, onClick }: { title: string; description: string; icon: React.ReactNode; onClick: () => void }) => {
-    return (
-        <Card className="shadow-md w-96 z-10" onClick={onClick}>
-            <CardContent className="flex items-center px-4 gap-4 h-14">
-                <div className="flex items-center justify-center w-auto h-full rounded-full bg-violet-200 p-2">
-                    {icon}
-                </div>
-                <div className="h-full flex flex-col items-start justify-between gap-1">
-                    <h1 className="text-2xl font-semibold text-center">{title}</h1>
-                    <p className="text-sm text-center text-gray-500 mb-0">{description}</p>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
+import { IconCard } from "@/components/admin/IconCard";
+import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
+import { NavBar } from "@/components/shared/NavBar";
 
 export const AdminPage = () => {
     const goToManageParticipants = () => {
@@ -34,7 +18,7 @@ export const AdminPage = () => {
             <BackgroundShapes />
             <NavBar />
             <div className="flex flex-col items-center justify-center w-full h-full gap-4">
-                <PageCard
+                <IconCard
                     title="Manage Participants"
                     description="Add, remove or edit participants"
                     icon={
@@ -44,7 +28,7 @@ export const AdminPage = () => {
                     }
                     onClick={goToManageParticipants}
                 />
-                <PageCard
+                <IconCard
                     title="Vote Results"
                     description="View the vote results"
                     icon={
@@ -54,7 +38,7 @@ export const AdminPage = () => {
                     }
                     onClick={goToVoteResults}
                 />
-                <PageCard
+                <IconCard
                     title="Config Voting"
                     description="Set the vote timing"
                     icon={
