@@ -5,6 +5,7 @@ import { VoteResultPage } from "./pages/VoteResultPage";
 import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
 import { AdminVoteCount } from "./pages/admin/AdminVoteCount";
 import { AdminPage } from "./pages/admin/AdminPage";
+import { AdminManagePage } from "./pages/admin/AdminManagePage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/votecount" element={<AdminVoteCount />} />
+            <Route path="/admin/manage" element={<AdminManagePage />} />
         </Routes>
     </BrowserRouter>
   );
