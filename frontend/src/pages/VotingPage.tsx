@@ -4,7 +4,6 @@ import { VotingCard } from "@/components/vote/VotingCard";
 import { useEffect, useState } from "react";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
 import { SplashScreen } from "@/components/vote/SplashScreen";
-import { participants } from "@/components/debug/data";
 
 export const VotingPage = () => {
   const [selectedParticipant, setSelectedParticipant] = useState<{
@@ -12,6 +11,29 @@ export const VotingPage = () => {
     name: string;
     description: string;
   } | null>(null);
+
+  const [participants, setParticipants] = useState<{
+    id: string;
+    name: string;
+    description: string;
+    imageUrl: string;
+  }[]>([]);
+
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      try {
+        const response = await fetch('/api/participants');
+        const data = await response.json();
+        setParticipants(data.participants);
+      } catch (error) {
+        console.error("Failed to fetch participants:", error);
+        // Fallback to the imported participants if fetch fails
+        setParticipants(participants);
+      }
+    };
+    
+    fetchParticipants();
+  }, []);
 
   const handleVote = async (id: string) => {
     // Simulate an API call to cast a vote

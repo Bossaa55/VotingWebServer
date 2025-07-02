@@ -10,24 +10,30 @@ services:
       - "8000:80"
     volumes:
       - ./app:/app
+      - ./logs:/logs
     environment:
-      - MONGO_URL=mongodb://mongodb:27017
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
     depends_on:
-      - mongodb
+      - mysql
 
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
     restart: always
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
-      - MONGO_INITDB_DATABASE=${DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
     ports:
-      - "27017:27017"
+      - "3307:3306"
     volumes:
-      - mongo_data:/data/db
-      - ./mongodb:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+      - ./mysql:/docker-entrypoint-initdb.d
 
 volumes:
-  mongo_data:
+  mysql_data:
