@@ -1,10 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NavBar } from "../components/shared/NavBar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
-import { useLocation } from "react-router-dom";
-import { participants } from "@/components/debug/data";
+import type { Participant } from "@/interface/Participant";
 
 
 export const VoteResultPage = () => {
@@ -12,10 +11,27 @@ export const VoteResultPage = () => {
     confetti();
   }, []);
 
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const participantId = queryParams.get("participantId");
-  const participant = participants.find((p) => p.id === participantId);
+  const [participant, setParticipant] = useState<Participant | null>(null);
+
+  useEffect(() => {
+    const fetchVoteInfo = async () => {
+      try {
+        const response = await fetch(`/api/vote-info`);
+
+        if(response.ok) {
+          const data = await response.json();
+          setParticipant(data);
+        }else{
+          window.location.href = "/vote";
+        }
+      } catch (error) {
+        console.error("Failed to fetch participants:", error);
+      }
+    };
+
+    fetchVoteInfo();
+  }, []);
+
 
  return (
     <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">

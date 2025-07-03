@@ -36,13 +36,16 @@ export const VotingPage = () => {
   }, []);
 
   const handleVote = async (id: string) => {
-    // Simulate an API call to cast a vote
-    return new Promise((resolve) => {
-      setTimeout(() => {
-      console.log(`Voted for participant with ID: ${id}`);
+    return new Promise(async (resolve) => {
+      const response = await fetch(`/api/vote/${id}`, {
+        method: 'POST'
+      });
+      if (!response.ok) {
+        console.error("Failed to cast vote");
+        return;
+      }
       resolve(true);
-      window.location.href = `/voteresult?participantId=${id}`;
-      }, 1000);
+      window.location.href = `/voteresult?p=${id}`;
     });
   };
 

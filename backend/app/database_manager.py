@@ -1,4 +1,3 @@
-from logging import Logger
 import mysql.connector
 from mysql.connector import Error
 from typing import Optional
@@ -141,6 +140,68 @@ class DatabaseManager:
             return participants
         except Error as e:
             print(f"Error retrieving participants: {e}")
+            return None
+
+    def get_participant(self, participant_id: str) -> Optional[dict]:
+        """Get details of a specific participant.
+
+        Args:
+            participant_id: Unique identifier for the participant
+
+        Returns:
+            Dictionary with participant details or None if not found
+        """
+        if not self.connection:
+            print("Database not connected.")
+            return None
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            cursor.execute("SELECT id, name FROM participants WHERE id = %s", (participant_id,))
+            participant = cursor.fetchone()
+            cursor.close()
+
+            if participant:
+                if isinstance(participant, dict):
+                    participant["imageUrl"] = f"/api/img/{participant['id']}"
+                    return participant
+            else:
+                print(f"Participant {participant_id} not found.")
+                return None
+        except Error as e:
+            print(f"Error retrieving participant {participant_id}: {e}")
+            return None
+
+    def get_vote_info(self, session_id: str) -> Optional[dict]:
+        """Get information about the voting session.
+
+        Args:
+            session_id: Unique identifier for the session
+
+        Returns:
+            Dictionary with session information or None if error
+        """
+        if not self.connection:
+            print("Database not connected.")
+            return None
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            cursor.execute("SELECT v.created_at, p.id, p.name FROM votes v, participants p WHERE p.id = v.participant_id AND v.session_id = %s", (session_id,))
+            vote_info = cursor.fetchall()
+            cursor.close()
+
+            if not vote_info:
+                return None
+
+            # Ensure the result is a dictionary before returning
+            first_vote = vote_info[0]
+            if isinstance(first_vote, dict):
+                return first_vote
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting vote info: {e}")
             return None
 
     def get_vote_counts(self) -> Optional[dict]:

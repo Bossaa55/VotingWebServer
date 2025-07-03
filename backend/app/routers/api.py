@@ -21,6 +21,28 @@ async def get_participants():
     participants = db.get_participants()
     return {"participants": participants}
 
+@router.get("/participant/{participant_id}")
+async def get_participant(participant_id: str):
+    """Get details of a specific participant."""
+    participant = db.get_participant(participant_id)
+    if not participant:
+        raise HTTPException(status_code=404, detail="Participant not found")
+    return {"participant": participant}
+
+@router.get("/vote-info")
+async def vote_info(request: Request):
+    """Get information about the voting session."""
+    session_id = request.cookies.get("session_id")
+    if not session_id:
+        raise HTTPException(status_code=400, detail="Session ID not found")
+
+    vote_info = db.get_vote_info(session_id)
+
+    if not vote_info:
+        raise HTTPException(status_code=404, detail="Vote information not found")
+
+    return vote_info
+
 @router.post("/vote/{participant_id}")
 async def submit_vote(request: Request, participant_id: str):
     """Submit a vote for a participant."""
