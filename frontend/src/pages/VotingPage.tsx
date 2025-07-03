@@ -31,7 +31,7 @@ export const VotingPage = () => {
         setParticipants(participants);
       }
     };
-    
+
     fetchParticipants();
   }, []);
 
@@ -73,13 +73,21 @@ export const VotingPage = () => {
         <BackgroundShapes />
         <div className="text-center z-10 relative">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-            {participants.map((participant) => (
-              <VotingCard
-                key={participant.id}
-                participant={participant}
-                onVote={() => setSelectedParticipant(participant)}
-              />
-            ))}
+            {
+              participants && participants.length > 0 ? (
+                participants.map((participant) => (
+                  <VotingCard
+                    key={participant.id}
+                    participant={participant}
+                    onVote={() => setSelectedParticipant(participant)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center p-6 bg-white rounded-lg shadow-md">
+                  <p className="text-gray-500">No participants available at the moment.</p>
+                </div>
+              )
+            }
           </div>
         </div>
       </div>
