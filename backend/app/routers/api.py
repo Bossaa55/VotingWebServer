@@ -1,4 +1,6 @@
 import os
+import time
+import uuid
 from app.logger import Logger
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import FileResponse
@@ -6,6 +8,8 @@ from pathlib import Path
 from typing import List, Dict, Any
 
 from app.database_manager import DatabaseManager
+from app import auth_utils
+from fastapi import UploadFile, File, Form
 
 DATABASE_USER = os.getenv("DATABASE_USER", None)
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
@@ -64,12 +68,67 @@ async def get_vote_results():
     """Get current vote results."""
     # You'll need to implement this in your database manager
     # For now, returning a placeholder
-    return {"results": "Vote results endpoint - implement in database manager"}
+    return db.get_vote_counts()
 
 @router.get("/img/{id}")
 async def get_image(id: str):
     """Serve an image file."""
-    image_path = Path("app/data/images") / f"{id}.jpg"
+    image_path = Path("/data/images") / f"{id}.jpg"
     if image_path.is_file():
         return FileResponse(image_path)
     raise HTTPException(status_code=404, detail="Image not found")
+
+#region Admin Routes
+
+@router.post("/admin/add-participant")
+async def add_participant(
+    request: Request,
+    name: str = Form(...),
+    image: UploadFile = File(...)
+):
+    """Add a new participant with an image file."""
+    access_token = request.cookies.get("access_token")
+    if not access_token or not auth_utils.verify_token(access_token):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
+    if not name or not image:
+        raise HTTPException(status_code=400, detail="Invalid participant data")
+
+    id = str(uuid.uuid4())
+
+    image_dir = Path("/data/images")
+    image_dir.mkdir(parents=True, exist_ok=True)
+    image_path = image_dir / f"{id}.jpg"
+    with image_path.open("wb") as f:
+        f.write(await image.read())
+
+    success = db.add_participant(id, name)
+    if success:
+        return {"message": "Participant added successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to add participant")
+
+@router.patch("/admin/update-participant")
+async def update_participant(
+    participant_id: str = Form(...),
+    name: str = Form(...),
+    image: UploadFile = File(None)
+):
+    """Update an existing participant's details."""
+    if not name:
+        raise HTTPException(status_code=400, detail="Name is required")
+
+    if image:
+        image_dir = Path("/data/images")
+        image_dir.mkdir(parents=True, exist_ok=True)
+        image_path = image_dir / f"{participant_id}.jpg"
+        with image_path.open("wb") as f:
+            f.write(await image.read())
+
+    success = db.update_participant(participant_id, name)
+    if success:
+        return {"message": "Participant updated successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to update participant")
+
+#endregion

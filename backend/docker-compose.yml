@@ -10,6 +10,7 @@ services:
       - "8000:80"
     volumes:
       - ./app:/app
+      - ./data:/data
       - ./logs:/logs
     environment:
       - DATABASE_HOST=mysql

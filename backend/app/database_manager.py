@@ -116,6 +116,33 @@ class DatabaseManager:
             print(f"Error adding participant: {e}")
             return False
 
+    def update_participant(self, participant_id: str, name: str) -> bool:
+        """Update an existing participant's name.
+
+        Args:
+            participant_id: Unique identifier for the participant
+            name: New name for the participant
+
+        Returns:
+            True if the participant was updated successfully, False otherwise
+        """
+        if not self.connection:
+            print("Database not connected.")
+            return False
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "UPDATE participants SET name = %s WHERE id = %s",
+                (name, participant_id)
+            )
+            cursor.close()
+            print(f"Participant updated: {participant_id} - {name}")
+            return True
+        except Error as e:
+            print(f"Error updating participant: {e}")
+            return False
+
     def get_participants(self) -> Optional[list]:
         """Retrieve all participants from the database.
 
@@ -171,7 +198,7 @@ class DatabaseManager:
         except Error as e:
             print(f"Error retrieving participant {participant_id}: {e}")
             return None
-
+        
     def get_vote_info(self, session_id: str) -> Optional[dict]:
         """Get information about the voting session.
 

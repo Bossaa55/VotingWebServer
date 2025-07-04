@@ -46,11 +46,15 @@ app.include_router(api.router, prefix="/api", tags=["api"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 if frontend_build.exists():
+    print(f"Frontend build directory found at: {frontend_build}")
     app.mount("/static", StaticFiles(directory=frontend_build / "assets"), name="static")
+    print(f"Mounted static files at /static: {frontend_build / 'assets'}")
     for static_dir in ["assets"]:
         static_path = frontend_build / static_dir
+        print(f"Checking for static directory: {static_path}")
         if static_path.exists():
             app.mount(f"/{static_dir}", StaticFiles(directory=static_path), name=static_dir)
+            print(f"Mounted static files at /{static_dir}: {static_path}")
 
 
 @app.get("/")
@@ -95,6 +99,7 @@ async def serve_voteresult(request: Request, path: str = ""):
         return RedirectResponse(url="/", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
+
 
 if db.get_users_count() == 0:
     if not INITIAL_ADMIN_USERNAME or not INITIAL_ADMIN_PASSWORD:
