@@ -234,6 +234,69 @@ class DatabaseManager:
             print(f"Error getting vote counts: {e}")
             return None
 
+    def authenticate_user(self, username: str, password: str) -> Optional[bool]:
+        """Authenticate user."""
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return None
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT password FROM users WHERE username = %s", (username,))
+            result = cursor.fetchone()
+            cursor.close()
+
+            if result:
+                stored_hash: str = str(list(result)[0])
+                from app.auth_utils import verify_password
+                return verify_password(password, stored_hash)
+            return False
+        except Exception as e:
+            print(f"Error authenticating user: {e}")
+            return False
+
+    def create_user(self, username, password: str) -> bool:
+        """Create a new user in the database."""
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return False
+
+        try:
+            from app.auth_utils import get_password_hash
+            hashed_password = get_password_hash(password)
+
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO users (username, password) VALUES (%s, %s)",
+                (username, hashed_password)
+            )
+            self.connection.commit()
+            cursor.close()
+            print(f"User created: {username}")
+            return True
+        except Error as e:
+            print(f"Error creating user: {e}")
+            return False
+
+    def get_users_count(self) -> int:
+        """Get the count of users in the database."""
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return 0
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(*) as user_count FROM users")
+            result = cursor.fetchone()
+            cursor.close()
+            if result and len(result) > 0:
+                return int(result[0])
+            else:
+                return 0
+        except Error as e:
+            print(f"Error getting users count: {e}")
+            return 0
+
     def close(self):
         """Close the database connection."""
         if self.connection and self.connection.is_connected():

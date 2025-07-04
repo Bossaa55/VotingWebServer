@@ -5,17 +5,20 @@ from typing import Union
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 import uuid
 
 from app.routers import api
+from app.routers import auth
 from .database_manager import DatabaseManager
 
 DATABASE_USER = os.getenv("DATABASE_USER", None)
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
+INITIAL_ADMIN_USERNAME = os.getenv("INITIAL_ADMIN_USERNAME", None)
+INITIAL_ADMIN_PASSWORD = os.getenv("INITIAL_ADMIN_PASSWORD", None)
 
 if not DATABASE_USER or not DATABASE_PASSWORD:
     raise ValueError("DATABASE_USER and DATABASE_PASSWORD environment variables must be set.")
@@ -39,8 +42,8 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Include API router
 app.include_router(api.router, prefix="/api", tags=["api"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 if frontend_build.exists():
     app.mount("/static", StaticFiles(directory=frontend_build / "assets"), name="static")
@@ -60,30 +63,41 @@ async def serve_react_app(request: Request, response: Response):
         file_response = FileResponse(frontend_build / "index.html")
         file_response.set_cookie(key="session_id", value=session_id, httponly=True)
         return file_response
+    elif db.session_voted(session_id):
+        return RedirectResponse(url="/voteresult", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
 
+@app.get("/admin")
+@app.get("/admin/{path:path}")
+async def serve_admin_routes(request: Request, path: str = ""):
+    """Handle admin routes with authentication check."""
+    access_token = request.cookies.get("access_token")
 
-@app.get("/{path:path}")
-async def serve_react_routes(request: Request, path: str):
-    """
-    Catch-all route to serve React app for client-side routing.
-    This ensures that React Router can handle all routes.
-    """
-    # Don't serve React app for API routes
-    if path.startswith("api/"):
-        return {"error": "API endpoint not found"}
+    if not access_token:
+        if path != "login":
+            return RedirectResponse(url="/admin/login", status_code=302)
+    elif path == "login":
+        return RedirectResponse(url="/admin", status_code=302)
 
+    return FileResponse(frontend_build / "index.html")
+
+@app.get("/voteresult")
+async def serve_voteresult(request: Request, path: str = ""):
+    """Handle admin routes with authentication check."""
     session_id = request.cookies.get("session_id")
 
-    file_path = frontend_build / path
-    if file_path.is_file():
-        return FileResponse(file_path)
-
     if not session_id:
-        session_id = str(uuid.uuid4())
-        file_response = FileResponse(frontend_build / "index.html")
-        file_response.set_cookie(key="session_id", value=session_id, httponly=True)
-        return file_response
+        return RedirectResponse(url="/", status_code=302)
+
+    vote_info = db.get_vote_info(session_id)
+    if not vote_info:
+        return RedirectResponse(url="/", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
+
+if db.get_users_count() == 0:
+    if not INITIAL_ADMIN_USERNAME or not INITIAL_ADMIN_PASSWORD:
+        raise ValueError("INITIAL_ADMIN_USERNAME and INITIAL_ADMIN_PASSWORD environment variables must be set.")
+    db.create_user(INITIAL_ADMIN_USERNAME, INITIAL_ADMIN_PASSWORD)
+    logger.info(f"Created initial admin user: {INITIAL_ADMIN_USERNAME}")
