@@ -131,4 +131,19 @@ async def update_participant(
     else:
         raise HTTPException(status_code=500, detail="Failed to update participant")
 
+
+@router.delete("/admin/delete-participant")
+async def delete_participant(participant_id: str = Form(...)):
+    """Delete a participant."""
+    if not participant_id:
+        raise HTTPException(status_code=400, detail="Participant ID is required")
+
+    success = db.delete_participant(participant_id)
+    if success:
+        image_path = Path("/data/images") / f"{participant_id}.jpg"
+        if image_path.is_file():
+            image_path.unlink()
+        return {"message": "Participant deleted successfully"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to delete participant")
 #endregion

@@ -143,6 +143,29 @@ class DatabaseManager:
             print(f"Error updating participant: {e}")
             return False
 
+    def delete_participant(self, participant_id: str) -> bool:
+        """Delete a participant from the database.
+
+        Args:
+            participant_id: Unique identifier for the participant
+
+        Returns:
+            True if the participant was deleted successfully, False otherwise
+        """
+        if not self.connection:
+            print("Database not connected.")
+            return False
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM participants WHERE id = %s", (participant_id,))
+            cursor.close()
+            print(f"Participant deleted: {participant_id}")
+            return True
+        except Error as e:
+            print(f"Error deleting participant: {e}")
+            return False
+
     def get_participants(self) -> Optional[list]:
         """Retrieve all participants from the database.
 
