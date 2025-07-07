@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import type { Participant } from "@/interface/Participant";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 
 const cardVariants = {
@@ -36,7 +36,6 @@ export const VotingCard = ({ participant, onVote }: { participant: Participant; 
                 <CardHeader className="flex flex-col items-center justify-between">
                     <CardTitle className="text-lg font-semibold">{participant.name}</CardTitle>
                     <img src={participant.imageUrl} alt="Contestant" className="w-24 h-24 rounded-full mr-4" />
-                    <CardDescription>{participant.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Button

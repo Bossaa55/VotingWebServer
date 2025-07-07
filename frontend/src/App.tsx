@@ -7,6 +7,7 @@ import { AdminVoteCount } from "./pages/admin/AdminVoteCount";
 import { AdminPage } from "./pages/admin/AdminPage";
 import { AdminManagePage } from "./pages/admin/manage/AdminManagePage";
 import { AdminManageCreatePage } from "./pages/admin/manage/AdminManageCreatePage";
+import { AdminManageEditPage } from "./pages/admin/manage/AdminManageEditPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/admin/votecount" element={<AdminVoteCount />} />
             <Route path="/admin/manage" element={<AdminManagePage />} />
             <Route path="/admin/manage/create" element={<AdminManageCreatePage />} />
+            <Route path="/admin/manage/edit" element={<AdminManageEditPage />} />
         </Routes>
     </BrowserRouter>
   );

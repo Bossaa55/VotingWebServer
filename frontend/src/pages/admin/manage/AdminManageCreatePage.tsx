@@ -47,19 +47,33 @@ export const ImageUpload = ({
 
 export const AdminManageCreatePage = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleCreate = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setIsUploading(true);
-    // Simulate an API call to create a participant
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log("Participant created successfully!");
-        setIsUploading(false);
-        resolve(true);
-        window.location.href = "/admin/manage";
-      }, 1000);
-    });
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setIsUploading(true);
+
+      const formData = new FormData(e.currentTarget);
+      const name = formData.get('name') as string;
+
+      const apiFormData = new FormData();
+      apiFormData.append('name', name);
+      if (selectedFile) {
+          apiFormData.append('image', selectedFile);
+      }
+
+      const response = await fetch(`/api/admin/add-participant`, {
+          method: 'POST',
+          body: apiFormData,
+      });
+
+      if (!response.ok) {
+          console.error("Failed to login");
+          setIsUploading(false);
+          return;
+      }
+
+      window.location.href = '/admin/manage';
   };
 
   return (
@@ -75,18 +89,17 @@ export const AdminManageCreatePage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-col items-center justify-center gap-5 px-5 pt-3 mb-3 w-full">
+          <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-5 px-5 pt-3 mb-3 w-full">
             <Input
               type="text"
               name="Nom"
               placeholder="Entra el nom de l'usuari"
               id="name"
             />
-            <ImageUpload onImageUpload={(file) => console.log(file)} />
+            <ImageUpload onImageUpload={(file) => setSelectedFile(file)} />
             <div className="flex items-center justify-end w-full">
               <button
                 type="submit"
-                onClick={handleCreate}
                 className="bg-violet-500 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center gap-2"
               >
                 {isUploading ? (

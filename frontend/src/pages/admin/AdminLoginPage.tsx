@@ -9,8 +9,8 @@ export const AdminLoginPage = () => {
 
         // Get form data
         const formData = new FormData(e.currentTarget);
-        const username = formData.get('Username') as string;
-        const password = formData.get('Password') as string;
+        const username = formData.get('username') as string;
+        const password = formData.get('password') as string;
 
         const response = await fetch(`/auth/login/`, {
             method: 'POST',

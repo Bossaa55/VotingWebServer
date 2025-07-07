@@ -74,6 +74,7 @@ export const AdminPage = () => {
                 <CountdownCard />
 
                 <IconCard
+                    className="cursor-pointer"
                     title="Administrar Participants"
                     description="Add, remove or edit participants"
                     icon={
@@ -84,6 +85,7 @@ export const AdminPage = () => {
                     onClick={goToManageParticipants}
                 />
                 <IconCard
+                    className="cursor-pointer"
                     title="Results de Votacions"
                     description="View the vote results"
                     icon={

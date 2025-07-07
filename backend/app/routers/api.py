@@ -110,15 +110,27 @@ async def add_participant(
 
 @router.patch("/admin/update-participant")
 async def update_participant(
+    request: Request,
     participant_id: str = Form(...),
     name: str = Form(...),
     image: UploadFile = File(None)
 ):
     """Update an existing participant's details."""
+    access_token = request.cookies.get("access_token")
+    if not access_token or not auth_utils.verify_token(access_token):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
+    if not participant_id:
+        raise HTTPException(status_code=400, detail="Participant ID is required")
+
+    if db.get_participant(participant_id) is None:
+        raise HTTPException(status_code=404, detail="Participant not found")
+
     if not name:
         raise HTTPException(status_code=400, detail="Name is required")
 
     if image:
+        print(f"Updating image for participant {participant_id}")
         image_dir = Path("/data/images")
         image_dir.mkdir(parents=True, exist_ok=True)
         image_path = image_dir / f"{participant_id}.jpg"
@@ -132,9 +144,13 @@ async def update_participant(
         raise HTTPException(status_code=500, detail="Failed to update participant")
 
 
-@router.delete("/admin/delete-participant")
-async def delete_participant(participant_id: str = Form(...)):
+@router.delete("/admin/delete-participant/{participant_id}")
+async def delete_participant(request: Request, participant_id: str):
     """Delete a participant."""
+    access_token = request.cookies.get("access_token")
+    if not access_token or not auth_utils.verify_token(access_token):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
     if not participant_id:
         raise HTTPException(status_code=400, detail="Participant ID is required")
 
@@ -146,4 +162,5 @@ async def delete_participant(participant_id: str = Form(...)):
         return {"message": "Participant deleted successfully"}
     else:
         raise HTTPException(status_code=500, detail="Failed to delete participant")
+
 #endregion

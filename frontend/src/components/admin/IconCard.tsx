@@ -1,8 +1,20 @@
 import { Card, CardContent } from "../ui/card";
 
-export const IconCard = ({ title, description, icon, onClick }: { title: string; description: string; icon: React.ReactNode; onClick: () => void }) => {
+export const IconCard = ({
+    title,
+    description,
+    icon,
+    onClick,
+    className,
+}: {
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+    onClick: () => void;
+    className?: string;
+}) => {
     return (
-        <Card className="shadow-md w-96 z-10" onClick={onClick}>
+        <Card className={`shadow-md w-96 z-10 ${className ?? ""}`} onClick={onClick}>
             <CardContent className="flex items-center px-4 gap-4 h-14">
                 <div className="flex items-center justify-center w-auto h-full rounded-full bg-violet-200 p-2">
                     {icon}
