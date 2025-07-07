@@ -8,12 +8,13 @@ import { AdminPage } from "./pages/admin/AdminPage";
 import { AdminManagePage } from "./pages/admin/manage/AdminManagePage";
 import { AdminManageCreatePage } from "./pages/admin/manage/AdminManageCreatePage";
 import { AdminManageEditPage } from "./pages/admin/manage/AdminManageEditPage";
+import { HomePage } from "./pages/HomePage";
 
 function App() {
   return (
     <BrowserRouter>
         <Routes>
-            <Route path="/" element={<VotingPage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/vote" element={<VotingPage />} />
             <Route path="/voteresult" element={<VoteResultPage />} />
             <Route path="/admin" element={<AdminPage />} />
