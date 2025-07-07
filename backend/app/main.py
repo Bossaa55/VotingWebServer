@@ -32,6 +32,8 @@ frontend_build = Path(__file__).parent / "frontend"
 origins = [
     "http://localhost:8000",
     "localhost:8000"
+    "http://localhost:5173",
+    "localhost:5173",
 ]
 
 app.add_middleware(
@@ -49,7 +51,7 @@ if frontend_build.exists():
     print(f"Frontend build directory found at: {frontend_build}")
     app.mount("/static", StaticFiles(directory=frontend_build / "assets"), name="static")
     print(f"Mounted static files at /static: {frontend_build / 'assets'}")
-    for static_dir in ["assets"]:
+    for static_dir in ["assets", "img"]:
         static_path = frontend_build / static_dir
         print(f"Checking for static directory: {static_path}")
         if static_path.exists():
@@ -83,6 +85,24 @@ async def serve_admin_routes(request: Request, path: str = ""):
             return RedirectResponse(url="/admin/login", status_code=302)
     elif path == "login":
         return RedirectResponse(url="/admin", status_code=302)
+
+    return FileResponse(frontend_build / "index.html")
+
+@app.get("/vote")
+async def serve_vote(request: Request):
+    """Serve the voting page."""
+    session_id = request.cookies.get("session_id")
+    print(f"Session ID from cookie: {session_id}")
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        file_response = FileResponse(frontend_build / "index.html")
+        file_response.set_cookie(key="session_id", value=session_id, httponly=True)
+        return file_response
+
+    vote_info = db.get_vote_info(session_id)
+    print(f"Vote info for session ID {session_id}: {vote_info}")
+    if vote_info:
+        return RedirectResponse(url="/voteresult", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
 
