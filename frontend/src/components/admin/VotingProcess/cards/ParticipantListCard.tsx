@@ -1,0 +1,53 @@
+import { Card } from "@/components/ui/card";
+import type { Participant } from "@/interface/Participant";
+
+const ParticipantItem = ({ participant }: { participant: Participant }) => {
+  return (
+    <li className="py-3 sm:py-4">
+      <div className="flex items-center space-x-4 rtl:space-x-reverse">
+        <div className="shrink-0">
+          <img
+            className="w-8 h-8 rounded-full"
+            src={participant.imageUrl}
+            alt={participant.name}
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+            {participant.name}
+          </p>
+        </div>
+        <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+          {participant.votes}
+        </div>
+      </div>
+    </li>
+  );
+};
+
+export const ParticipantListCard = ({
+  participants,
+}: {
+  participants: Participant[];
+}) => {
+  return (
+    <Card className="z-10 flex flex-col items-center h-full col-span-2 row-span-5 px-4 py-1 overflow-y-auto">
+      <ul className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <li className="py-1">
+          <div className="flex items-center space-x-4 rtl:space-x-reverse">
+            <div className="shrink-0">
+              <p className="w-8 h-8"></p>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-gray-900 truncate">Nom</p>
+            </div>
+            <div className="text-sm font-bold text-gray-900 truncate">Vots</div>
+          </div>
+        </li>
+        {participants.map((participant) => (
+          <ParticipantItem key={participant.id} participant={participant} />
+        ))}
+      </ul>
+    </Card>
+  );
+};

@@ -9,6 +9,7 @@ import { AdminManagePage } from "./pages/admin/manage/AdminManagePage";
 import { AdminManageCreatePage } from "./pages/admin/manage/AdminManageCreatePage";
 import { AdminManageEditPage } from "./pages/admin/manage/AdminManageEditPage";
 import { HomePage } from "./pages/HomePage";
+import { AdminVotingProcess } from "./pages/admin/AdminVotingProcess";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/votecount" element={<AdminVoteCount />} />
+            <Route path="/admin/votingprocess" element={<AdminVotingProcess />} />
             <Route path="/admin/manage" element={<AdminManagePage />} />
             <Route path="/admin/manage/create" element={<AdminManageCreatePage />} />
             <Route path="/admin/manage/edit" element={<AdminManageEditPage />} />
