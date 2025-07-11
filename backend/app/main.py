@@ -184,3 +184,11 @@ def set_is_countdown_on(state: bool):
     global is_countdown_on
     is_countdown_on = state
     logger.info(f"Countdown state set to: {is_countdown_on}")
+
+def get_is_countdown_on() -> bool:
+    """Get the current countdown state."""
+    return is_countdown_on
+
+def get_countdown_time() -> int:
+    """Get the current countdown time."""
+    return countdown_time

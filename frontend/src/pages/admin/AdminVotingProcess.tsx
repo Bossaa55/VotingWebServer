@@ -17,7 +17,7 @@ const BottomButtons = ({
   startButtonClick,
   stopButtonClick,
 }: {
-  isRunning: boolean;
+  isRunning: boolean | null;
   resetButtonClick: () => void;
   startButtonClick: () => void;
   stopButtonClick: () => void;
@@ -28,6 +28,7 @@ const BottomButtons = ({
         <button
           className="w-full col-span-3 py-2 text-white bg-red-500 rounded hover:bg-blue-600"
           onClick={stopButtonClick}
+          disabled={isRunning === null}
         >
           Parar
         </button>
@@ -36,12 +37,14 @@ const BottomButtons = ({
           <button
             className="w-full py-2 text-white bg-red-500 rounded hover:bg-blue-600"
             onClick={resetButtonClick}
+            disabled={isRunning === null}
           >
             Reiniciar
           </button>
           <button
             className="w-full col-span-2 py-2 text-white rounded bg-violet-500 hover:bg-blue-600"
             onClick={startButtonClick}
+            disabled={isRunning === null}
           >
             Iniciar
           </button>
@@ -51,12 +54,9 @@ const BottomButtons = ({
   );
 };
 
-
-
 export const AdminVotingProcess = () => {
-  const [isRunning, setIsRunning] = useState(false);
-  const [participants, setParticipants] =
-    useState<Participant[] | null>(null);
+  const [isRunning, setIsRunning] = useState<boolean | null>(null);
+  const [participants, setParticipants] = useState<Participant[] | null>(null);
   const [totalVotes, setTotalVotes] = useState(-1);
   const [timeLeft, setTimeLeft] = useState<number>(-1);
   const [isCountdownModalOpen, setIsCountdownModalOpen] = useState(false);
@@ -69,42 +69,68 @@ export const AdminVotingProcess = () => {
     try {
       const response = await fetch(`/api/admin/countdown-time`);
 
-      if(response.ok) {
+      if (response.ok) {
         const data = await response.json();
         let countdownTime = data.countdown_time;
         setTimeLeft(countdownTime);
-      }else{
+      } else {
         console.error("Failed to fetch countdown time");
         setTimeLeft(120);
       }
     } catch (error) {
       console.error("Failed to fetch countdown time:", error);
     }
-  }
+  };
 
   const fetchParticipantsStatus = async () => {
     try {
       const response = await fetch(`/api/vote-results`);
 
-      if(response.ok) {
+      if (response.ok) {
         const data = await response.json();
         let participants = data.participants || [];
         setParticipants(participants);
-        setTotalVotes(participants.reduce((sum: any, p: { votes: any; }) => sum + (p.votes || 0), 0));
-      }else{
+        setTotalVotes(
+          participants.reduce(
+            (sum: any, p: { votes: any }) => sum + (p.votes || 0),
+            0
+          )
+        );
+      } else {
         console.error("Failed to fetch vote results");
         setParticipants([]);
       }
     } catch (error) {
       console.error("Failed to fetch participants:", error);
     }
-  }
+  };
+
+  const fetchCountdownStatus = async () => {
+    try {
+      const response = await fetch(`/api/admin/contdown-status`);
+
+      if (response.ok) {
+        const data = await response.json();
+        let isCountdownOn = data.is_countdown_on;
+        let countdownTime = data.countdown_time;
+        setIsRunning(countdownTime);
+        if (isCountdownOn) {
+          setTimeLeft(countdownTime);
+        }
+      } else {
+        console.error("Failed to fetch vote results");
+        setParticipants([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch participants:", error);
+    }
+  };
 
   useEffect(() => {
     const subscribeToParticipants = () => {
       // Connect directly to your backend server
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const backendHost = 'localhost:8000'; // Change this to your backend server port
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const backendHost = "localhost:8000"; // Change this to your backend server port
       const wsUrl = `${protocol}//${backendHost}/api/admin/subscribe-participants`;
       const ws = new WebSocket(wsUrl);
 
@@ -115,7 +141,13 @@ export const AdminVotingProcess = () => {
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         setParticipants(data.participants || []);
-        setTotalVotes(data.participants.reduce((sum: any, p: { votes: any; }) => sum + (p.votes || 0), 0));
+        if (data.countdown_time) setTimeLeft(data.countdown_time);
+        setTotalVotes(
+          data.participants.reduce(
+            (sum: any, p: { votes: any }) => sum + (p.votes || 0),
+            0
+          )
+        );
       };
 
       ws.onerror = (error) => {
@@ -134,6 +166,7 @@ export const AdminVotingProcess = () => {
 
     fetchCountdownTime();
     fetchParticipantsStatus();
+    fetchCountdownStatus();
     const cleanupWs = subscribeToParticipants();
 
     // Cleanup on component unmount
@@ -143,10 +176,10 @@ export const AdminVotingProcess = () => {
   const handleUpdateCountdownTime = async (seconds: number) => {
     try {
       const formData = new FormData();
-      formData.append('seconds', seconds.toString());
+      formData.append("seconds", seconds.toString());
 
       const response = await fetch(`/api/admin/set-countdown`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
 
@@ -159,12 +192,12 @@ export const AdminVotingProcess = () => {
     } catch (error) {
       console.error("Failed to update countdown time:", error);
     }
-  }
+  };
 
   const handleStartCountdown = async () => {
     try {
       const response = await fetch(`/api/admin/toggle-countdown`, {
-        method: 'POST',
+        method: "POST",
       });
       if (response.ok) {
         const data = await response.json();
@@ -182,7 +215,7 @@ export const AdminVotingProcess = () => {
   const handleStopCountdown = async () => {
     try {
       const response = await fetch(`/api/admin/toggle-countdown`, {
-        method: 'POST',
+        method: "POST",
       });
       if (response.ok) {
         const data = await response.json();
@@ -200,7 +233,7 @@ export const AdminVotingProcess = () => {
   const handleResetVotes = async () => {
     try {
       const response = await fetch(`/api/admin/reset-votes`, {
-        method: 'POST',
+        method: "POST",
       });
       if (response.ok) {
         fetchParticipantsStatus();
@@ -223,7 +256,7 @@ export const AdminVotingProcess = () => {
     }
 
     const interval = setInterval(() => {
-      setTimeLeft(prev => (prev > 0 ? prev - 1 : 0));
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => clearInterval(interval);

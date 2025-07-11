@@ -202,6 +202,12 @@ async def toggle_countdown(request: Request):
 
     return {"message": "Countdown state toggled", "is_countdown_on": not is_countdown_on, "countdown_time": countdown_time}
 
+@router.get("/admin/contdown-status")
+async def is_countdown_on():
+    """Check if the countdown is currently on."""
+    from app.main import get_is_countdown_on, get_countdown_time
+    return {"is_countdown_on": get_is_countdown_on(), "countdown_time": get_countdown_time()}
+
 @router.post("/admin/reset-votes")
 async def reset_votes(request: Request):
     """Reset all votes."""
@@ -215,18 +221,23 @@ async def reset_votes(request: Request):
 @router.websocket("/admin/subscribe-participants")
 async def subscribe_participants(websocket: WebSocket):
     """WebSocket endpoint to subscribe to participant updates."""
+    from app.main import get_is_countdown_on, get_countdown_time
     await websocket.accept()
     try:
         previous_participants = None
         while True:
-            vote_results = db.get_vote_counts()
-            if vote_results:
-                for participant in vote_results:
-                    participant["imageUrl"] = f"/api/img/{participant['id']}"
-            if previous_participants != vote_results:
-                previous_participants = vote_results
-                await websocket.send_json({"participants": vote_results})
-            await asyncio.sleep(0.01)  # Use asyncio.sleep instead of time.sleep
+            send_updates = get_is_countdown_on()
+            while send_updates:
+                vote_results = db.get_vote_counts()
+                if vote_results:
+                    for participant in vote_results:
+                        participant["imageUrl"] = f"/api/img/{participant['id']}"
+                if previous_participants != vote_results:
+                    previous_participants = vote_results
+                    await websocket.send_json({"participants": vote_results, "countdown_time": get_countdown_time()})
+                await asyncio.sleep(0.01)  # Use asyncio.sleep instead of time.sleep
+                send_updates = get_is_countdown_on()
+            await asyncio.sleep(1)
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected")
     except Exception as e:
