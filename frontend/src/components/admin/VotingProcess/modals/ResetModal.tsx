@@ -3,9 +3,11 @@ import { Modal } from "@/components/shared/Modal";
 export const ResetModal = ({
   isOpen,
   onClose,
+  onConfirm,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onConfirm: () => void;
 }) => {
   return (
     <Modal isOpen={isOpen}>
@@ -25,7 +27,7 @@ export const ResetModal = ({
           Cancelar
         </button>
         <button
-          onClick={() => {}}
+          onClick={onConfirm}
           className="w-full px-5 py-2 text-white bg-red-500 rounded-md"
         >
           Confirmar

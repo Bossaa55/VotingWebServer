@@ -21,12 +21,22 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    `key` VARCHAR(255) NOT NULL UNIQUE,
+    value TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 INSERT INTO participants (id, name) VALUES 
     ('1', 'Participant 1'),
     ('2', 'Participant 2'),
     ('3', 'Participant 3'),
     ('4', 'Participant 4')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
+
+INSERT INTO settings (`key`, value) VALUES 
+    ('countdown_time', '60');
 
 CREATE OR REPLACE VIEW vote_counts AS
 SELECT

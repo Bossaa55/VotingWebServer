@@ -1,6 +1,7 @@
+import time
 import mysql.connector
 from mysql.connector import Error
-from typing import Optional
+from typing import Any, Optional
 import os
 
 class DatabaseManager:
@@ -22,16 +23,25 @@ class DatabaseManager:
             password = os.getenv('DATABASE_PASSWORD', '')
             database = os.getenv('DATABASE_NAME', 'voting_db')
 
-            print(f"Connecting to MySQL at {host}:{port} as user {user} with database {database}")
 
-            self.connection = mysql.connector.connect(
-                host=host,
-                port=port,
-                user=user,
-                password=password,
-                database=database,
-                autocommit=True
-            )
+            while not self.connection:
+                print(f"Connecting to MySQL at {host}:{port} as user {user} with database {database}")
+                try:
+                    self.connection = mysql.connector.connect(
+                        host=host,
+                        port=port,
+                        user=user,
+                        password=password,
+                        database=database,
+                        autocommit=True
+                    )
+                    if not self.connection:
+                        print("Failed to connect to the database, retrying in 5 seconds...")
+                        time.sleep(5)
+                except Error as e:
+                    print(f"Error connecting to MySQL: {e}")
+                    print("Retrying in 5 seconds...")
+                    time.sleep(5)
 
             print(f"Connected to MySQL at {host}:{port} as user {user} with database {database}")
 
@@ -284,6 +294,27 @@ class DatabaseManager:
             print(f"Error getting vote counts: {e}")
             return None
 
+    def reset_votes(self) -> bool:
+        """Reset all votes in the database.
+
+        Returns:
+            True if votes were reset successfully, False otherwise
+        """
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return False
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM votes")
+            self.connection.commit()
+            cursor.close()
+            print("All votes have been reset.")
+            return True
+        except Error as e:
+            print(f"Error resetting votes: {e}")
+            return False
+
     def authenticate_user(self, username: str, password: str) -> Optional[bool]:
         """Authenticate user."""
         if not self.connection or not self.connection.is_connected():
@@ -346,6 +377,67 @@ class DatabaseManager:
         except Error as e:
             print(f"Error getting users count: {e}")
             return 0
+
+    #region Settings
+
+    def get_setting(self, key: str, default_vaule: Any = None) -> Any:
+        """Get a setting value by key.
+
+        Args:
+            key: The key of the setting
+            default_value: Default value to return if the setting is not found
+
+        Returns:
+            The value of the setting or default_value if not found
+        """
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return default_vaule
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            cursor.execute("SELECT value FROM settings WHERE `key` = %s", (key,))
+            result = cursor.fetchone()
+            cursor.close()
+            if result:
+                if isinstance(result, dict):
+                    return result.get("value", default_vaule)
+                elif isinstance(result, (tuple, list)) and len(result) > 0:
+                    return result[0]
+            return default_vaule
+        except Error as e:
+            print(f"Error getting setting {key}: {e}")
+            return default_vaule
+
+    def set_setting(self, key: str, value: Any) -> bool:
+        """Set a setting value by key.
+
+        Args:
+            key: The key of the setting
+            value: The value to set
+
+        Returns:
+            True if the setting was set successfully, False otherwise
+        """
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return False
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute(
+                "INSERT INTO settings (`key`, value) VALUES (%s, %s) ON DUPLICATE KEY UPDATE value = VALUES(value)",
+                (key, value)
+            )
+            self.connection.commit()
+            cursor.close()
+            print(f"Setting {key} set to {value}")
+            return True
+        except Error as e:
+            print(f"Error setting {key}: {e}")
+            return False
+
+    #endregion
 
     def close(self):
         """Close the database connection."""

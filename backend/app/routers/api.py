@@ -1,4 +1,6 @@
+import asyncio
 import os
+import random
 import time
 import uuid
 from app.logger import Logger
@@ -9,7 +11,7 @@ from typing import List, Dict, Any
 
 from app.database_manager import DatabaseManager
 from app import auth_utils
-from fastapi import UploadFile, File, Form
+from fastapi import UploadFile, File, Form, WebSocket, WebSocketDisconnect
 
 DATABASE_USER = os.getenv("DATABASE_USER", None)
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
@@ -68,7 +70,11 @@ async def get_vote_results():
     """Get current vote results."""
     # You'll need to implement this in your database manager
     # For now, returning a placeholder
-    return db.get_vote_counts()
+    vote_results = db.get_vote_counts()
+    if vote_results:
+        for participant in vote_results:
+            participant["imageUrl"] = f"/api/img/{participant['id']}"
+    return {"participants": vote_results}
 
 @router.get("/img/{id}")
 async def get_image(id: str):
@@ -174,9 +180,9 @@ async def set_countdown(request: Request, seconds: int = Form(...)):
         raise HTTPException(status_code=400, detail="Countdown time must be positive")
 
     db.set_setting("countdown_time", seconds)
-    from main import countdown_time
-    countdown_time = seconds
-    return {"message": "Countdown time set successfully", "countdown_time": countdown_time}
+    from app.main import set_countdown_time
+    set_countdown_time(seconds)
+    return {"message": "Countdown time set successfully", "countdown_time": seconds}
 
 @router.get("/admin/countdown-time")
 async def get_countdown_time():
@@ -191,11 +197,44 @@ async def toggle_countdown(request: Request):
     if not access_token or not auth_utils.verify_token(access_token):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
-    from main import is_countdown_on, countdown_time
-    is_countdown_on = not is_countdown_on
+    from app.main import set_is_countdown_on, is_countdown_on, countdown_time
+    set_is_countdown_on(not is_countdown_on)
 
-    return {"message": "Countdown state toggled", "is_countdown_on": is_countdown_on, "countdown_time": countdown_time}
+    return {"message": "Countdown state toggled", "is_countdown_on": not is_countdown_on, "countdown_time": countdown_time}
 
+@router.post("/admin/reset-votes")
+async def reset_votes(request: Request):
+    """Reset all votes."""
+    access_token = request.cookies.get("access_token")
+    if not access_token or not auth_utils.verify_token(access_token):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
 
+    db.reset_votes()
+    return {"message": "Votes reset successfully"}
+
+@router.websocket("/admin/subscribe-participants")
+async def subscribe_participants(websocket: WebSocket):
+    """WebSocket endpoint to subscribe to participant updates."""
+    await websocket.accept()
+    try:
+        previous_participants = None
+        while True:
+            vote_results = db.get_vote_counts()
+            if vote_results:
+                for participant in vote_results:
+                    participant["imageUrl"] = f"/api/img/{participant['id']}"
+            if previous_participants != vote_results:
+                previous_participants = vote_results
+                await websocket.send_json({"participants": vote_results})
+            await asyncio.sleep(0.01)  # Use asyncio.sleep instead of time.sleep
+    except WebSocketDisconnect:
+        logger.info("WebSocket client disconnected")
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+    finally:
+        try:
+            await websocket.close()
+        except:
+            pass
 
 #endregion

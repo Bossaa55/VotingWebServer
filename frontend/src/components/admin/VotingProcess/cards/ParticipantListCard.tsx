@@ -1,3 +1,4 @@
+import { Spinner } from "@/components/shared/Spinner";
 import { Card } from "@/components/ui/card";
 import type { Participant } from "@/interface/Participant";
 
@@ -28,26 +29,32 @@ const ParticipantItem = ({ participant }: { participant: Participant }) => {
 export const ParticipantListCard = ({
   participants,
 }: {
-  participants: Participant[];
+  participants: Participant[] | null;
 }) => {
   return (
     <Card className="z-10 flex flex-col items-center h-full col-span-2 row-span-5 px-4 py-1 overflow-y-auto">
-      <ul className="w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <li className="py-1">
-          <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <div className="shrink-0">
-              <p className="w-8 h-8"></p>
+      {participants === null ? (
+        <div className="flex items-center justify-center w-full h-full">
+          <Spinner />
+        </div>
+      ) : (
+        <ul className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <li className="py-1">
+            <div className="flex items-center space-x-4 rtl:space-x-reverse">
+              <div className="shrink-0">
+                <p className="w-8 h-8"></p>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-gray-900 truncate">Nom</p>
+              </div>
+              <div className="text-sm font-bold text-gray-900 truncate">Vots</div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 truncate">Nom</p>
-            </div>
-            <div className="text-sm font-bold text-gray-900 truncate">Vots</div>
-          </div>
-        </li>
-        {participants.map((participant) => (
-          <ParticipantItem key={participant.id} participant={participant} />
-        ))}
-      </ul>
+          </li>
+          {participants.map((participant) => (
+            <ParticipantItem key={participant.id} participant={participant} />
+          ))}
+        </ul>
+      )}
     </Card>
   );
 };

@@ -1,4 +1,5 @@
 import asyncio
+import random
 from app.logger import Logger
 import os
 from pathlib import Path
@@ -29,7 +30,7 @@ app = FastAPI()
 db = DatabaseManager()
 
 countdown_time = int(db.get_setting("countdown_time", 60))
-is_countdown_on = True
+is_countdown_on = False
 
 frontend_build = Path(__file__).parent / "frontend"
 
@@ -140,8 +141,24 @@ async def run_countdown():
             countdown_time -= 1
             if countdown_time <= 0:
                 is_countdown_on = False
+                countdown_time = int(db.get_setting("countdown_time", 60))
         await asyncio.sleep(1)
 
+async def simulate_voting_process():
+    """Simulate the voting process for testing purposes."""
+    global is_countdown_on
+    # Get all participants
+    participants = db.get_participants()
+    if not participants:
+        print("No participants found.")
+        return
+
+    while True:
+        while is_countdown_on:
+            session_id = str(uuid.uuid4())
+            db.record_vote(session_id, participants[random.randint(0,len(participants)-1)]["id"])
+            await asyncio.sleep(0.01 * random.randint(0,50))  # Simulate a delay between votes
+        await asyncio.sleep(1)
 
 @app.on_event("startup")
 async def startup_event():
@@ -154,4 +171,16 @@ async def startup_event():
 
     # Start the countdown task
     asyncio.create_task(run_countdown())
+    asyncio.create_task(simulate_voting_process())
     logger.info("Countdown task started.")
+
+def set_countdown_time(seconds: int):
+    global countdown_time
+    countdown_time = seconds
+    db.set_setting("countdown_time", seconds)
+    logger.info(f"Countdown time set to: {countdown_time}")
+
+def set_is_countdown_on(state: bool):
+    global is_countdown_on
+    is_countdown_on = state
+    logger.info(f"Countdown state set to: {is_countdown_on}")

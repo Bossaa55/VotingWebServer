@@ -1,5 +1,5 @@
 import { Modal } from "@/components/shared/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const CountdownModal = ({
   timeLeft,
@@ -16,6 +16,11 @@ export const CountdownModal = ({
     timeLeft ? Math.floor(timeLeft / 60) : 0
   );
   const [seconds, setSeconds] = useState(timeLeft ? timeLeft % 60 : 0);
+
+  useEffect(() => {
+    setMinutes(timeLeft ? Math.floor(timeLeft / 60) : 0);
+    setSeconds(timeLeft ? timeLeft % 60 : 0);
+  }, [timeLeft]);
 
   return (
     <Modal isOpen={isOpen}>
