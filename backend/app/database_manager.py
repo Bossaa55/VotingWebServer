@@ -7,6 +7,8 @@ import os
 class DatabaseManager:
     """MySQL database manager for the voting web server."""
 
+    #region Database Connection Management
+
     def __init__(self):
         """Initialize the database connection.
 
@@ -48,6 +50,16 @@ class DatabaseManager:
         except Error as e:
             print(f"Error connecting to MySQL: {e}")
             self.connection = None
+
+    def close(self):
+        """Close the database connection."""
+        if self.connection and self.connection.is_connected():
+            self.connection.close()
+            print("Database connection closed.")
+
+    #endregion
+
+    #region Voting Operations
 
     def session_voted(self, session_id: str) -> bool:
         """Check if a session has already voted.
@@ -98,6 +110,102 @@ class DatabaseManager:
         except Error as e:
             print(f"Error recording vote: {e}")
             return False
+
+    def get_vote_info(self, session_id: str) -> Optional[dict]:
+        """Get information about the voting session.
+
+        Args:
+            session_id: Unique identifier for the session
+
+        Returns:
+            Dictionary with session information or None if error
+        """
+        if not self.connection:
+            print("Database not connected.")
+            return None
+
+        try:
+            cursor = self.connection.cursor(dictionary=True)
+            cursor.execute("SELECT v.created_at, p.id, p.name FROM votes v, participants p WHERE p.id = v.participant_id AND v.session_id = %s", (session_id,))
+            vote_info = cursor.fetchall()
+            cursor.close()
+
+            if not vote_info:
+                return None
+
+            # Ensure the result is a dictionary before returning
+            first_vote = vote_info[0]
+            if isinstance(first_vote, dict):
+                return first_vote
+            else:
+                return None
+        except Error as e:
+            print(f"Error getting vote info: {e}")
+            return None
+
+    def get_vote_counts(self) -> Optional[list]:
+        """Get vote counts for all participants.
+
+        Returns:
+            List of dictionaries with participant info and vote counts, or None if error
+        """
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return None
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                SELECT p.id, p.name, COALESCE(v.vote_count, 0) as votes
+                FROM participants p
+                LEFT JOIN (
+                    SELECT participant_id, COUNT(*) as vote_count
+                    FROM votes
+                    GROUP BY participant_id
+                ) v ON p.id = v.participant_id
+                ORDER BY votes DESC, p.name
+            """)
+            results = cursor.fetchall()
+            cursor.close()
+
+            # For regular cursor, results are tuples that can be accessed by index
+            result_list = []
+            for row in results:
+                if isinstance(row, tuple) and len(row) >= 3:
+                    result_list.append({
+                        "id": row[0], 
+                        "name": row[1], 
+                        "votes": row[2]
+                    })
+            return result_list
+        except Error as e:
+            print(f"Error getting vote counts: {e}")
+            return None
+
+    def reset_votes(self) -> bool:
+        """Reset all votes in the database.
+
+        Returns:
+            True if votes were reset successfully, False otherwise
+        """
+        if not self.connection or not self.connection.is_connected():
+            print("Database not connected.")
+            return False
+
+        try:
+            cursor = self.connection.cursor()
+            cursor.execute("DELETE FROM votes")
+            self.connection.commit()
+            cursor.close()
+            print("All votes have been reset.")
+            return True
+        except Error as e:
+            print(f"Error resetting votes: {e}")
+            return False
+
+    #endregion
+
+    #region Participant Management
 
     def add_participant(self, participant_id: str, name: str) -> bool:
         """Add a new participant to the database.
@@ -231,89 +339,10 @@ class DatabaseManager:
         except Error as e:
             print(f"Error retrieving participant {participant_id}: {e}")
             return None
-        
-    def get_vote_info(self, session_id: str) -> Optional[dict]:
-        """Get information about the voting session.
 
-        Args:
-            session_id: Unique identifier for the session
+    #endregion
 
-        Returns:
-            Dictionary with session information or None if error
-        """
-        if not self.connection:
-            print("Database not connected.")
-            return None
-
-        try:
-            cursor = self.connection.cursor(dictionary=True)
-            cursor.execute("SELECT v.created_at, p.id, p.name FROM votes v, participants p WHERE p.id = v.participant_id AND v.session_id = %s", (session_id,))
-            vote_info = cursor.fetchall()
-            cursor.close()
-
-            if not vote_info:
-                return None
-
-            # Ensure the result is a dictionary before returning
-            first_vote = vote_info[0]
-            if isinstance(first_vote, dict):
-                return first_vote
-            else:
-                return None
-        except Error as e:
-            print(f"Error getting vote info: {e}")
-            return None
-
-    def get_vote_counts(self) -> Optional[dict]:
-        """Get vote counts for all participants.
-
-        Returns:
-            Dictionary with participant_id as key and vote count as value, or None if error
-        """
-        if not self.connection or not self.connection.is_connected():
-            print("Database not connected.")
-            return None
-
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("""
-                SELECT p.id, p.name, COALESCE(v.vote_count, 0) as votes
-                FROM participants p
-                LEFT JOIN (
-                    SELECT participant_id, COUNT(*) as vote_count
-                    FROM votes
-                    GROUP BY participant_id
-                ) v ON p.id = v.participant_id
-                ORDER BY votes DESC, p.name
-            """)
-            results = cursor.fetchall()
-            cursor.close()
-
-            return [{"id": row[0], "name": row[1], "votes": row[2]} for row in results]
-        except Error as e:
-            print(f"Error getting vote counts: {e}")
-            return None
-
-    def reset_votes(self) -> bool:
-        """Reset all votes in the database.
-
-        Returns:
-            True if votes were reset successfully, False otherwise
-        """
-        if not self.connection or not self.connection.is_connected():
-            print("Database not connected.")
-            return False
-
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("DELETE FROM votes")
-            self.connection.commit()
-            cursor.close()
-            print("All votes have been reset.")
-            return True
-        except Error as e:
-            print(f"Error resetting votes: {e}")
-            return False
+    #region User Authentication
 
     def authenticate_user(self, username: str, password: str) -> Optional[bool]:
         """Authenticate user."""
@@ -367,20 +396,29 @@ class DatabaseManager:
 
         try:
             cursor = self.connection.cursor()
-            cursor.execute("SELECT COUNT(*) as user_count FROM users")
+            cursor.execute("SELECT COUNT(*) FROM users")
             result = cursor.fetchone()
             cursor.close()
             if result and len(result) > 0:
-                return int(result[0])
+                # For regular cursor, result is a tuple
+                if isinstance(result, tuple):
+                    count_value = result[0]
+                    if isinstance(count_value, int):
+                        return count_value
+                    elif isinstance(count_value, str) and count_value.isdigit():
+                        return int(count_value)
+                return 0
             else:
                 return 0
         except Error as e:
             print(f"Error getting users count: {e}")
             return 0
 
+    #endregion
+
     #region Settings
 
-    def get_setting(self, key: str, default_vaule: Any = None) -> Any:
+    def get_setting(self, key: str, default_value: Any = None) -> Any:
         """Get a setting value by key.
 
         Args:
@@ -392,7 +430,7 @@ class DatabaseManager:
         """
         if not self.connection or not self.connection.is_connected():
             print("Database not connected.")
-            return default_vaule
+            return default_value
 
         try:
             cursor = self.connection.cursor(dictionary=True)
@@ -401,13 +439,13 @@ class DatabaseManager:
             cursor.close()
             if result:
                 if isinstance(result, dict):
-                    return result.get("value", default_vaule)
+                    return result.get("value", default_value)
                 elif isinstance(result, (tuple, list)) and len(result) > 0:
                     return result[0]
-            return default_vaule
+            return default_value
         except Error as e:
             print(f"Error getting setting {key}: {e}")
-            return default_vaule
+            return default_value
 
     def set_setting(self, key: str, value: Any) -> bool:
         """Set a setting value by key.
@@ -438,9 +476,3 @@ class DatabaseManager:
             return False
 
     #endregion
-
-    def close(self):
-        """Close the database connection."""
-        if self.connection and self.connection.is_connected():
-            self.connection.close()
-            print("Database connection closed.")

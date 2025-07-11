@@ -21,6 +21,8 @@ router = APIRouter()
 
 db = DatabaseManager()
 
+#region Participant Management
+
 @router.get("/participants")
 async def get_participants():
     """Get the list of participants."""
@@ -34,6 +36,10 @@ async def get_participant(participant_id: str):
     if not participant:
         raise HTTPException(status_code=404, detail="Participant not found")
     return {"participant": participant}
+
+#endregion
+
+#region Voting Operations
 
 @router.get("/vote-info")
 async def vote_info(request: Request):
@@ -65,7 +71,23 @@ async def submit_vote(request: Request, participant_id: str):
     else:
         raise HTTPException(status_code=500, detail="Failed to record vote")
 
-@router.get("/vote-results")
+#endregion
+
+#region Static File Serving
+
+@router.get("/img/{id}")
+async def get_image(id: str):
+    """Serve an image file."""
+    image_path = Path("/data/images") / f"{id}.jpg"
+    if image_path.is_file():
+        return FileResponse(image_path)
+    raise HTTPException(status_code=404, detail="Image not found")
+
+#endregion
+
+#region Admin - Vote Results and Monitoring
+
+@router.get("/admin/vote-results")
 async def get_vote_results():
     """Get current vote results."""
     # You'll need to implement this in your database manager
@@ -76,15 +98,9 @@ async def get_vote_results():
             participant["imageUrl"] = f"/api/img/{participant['id']}"
     return {"participants": vote_results}
 
-@router.get("/img/{id}")
-async def get_image(id: str):
-    """Serve an image file."""
-    image_path = Path("/data/images") / f"{id}.jpg"
-    if image_path.is_file():
-        return FileResponse(image_path)
-    raise HTTPException(status_code=404, detail="Image not found")
+#endregion
 
-#region Admin Routes
+#region Admin - Participant Management
 
 @router.post("/admin/add-participant")
 async def add_participant(
@@ -149,7 +165,6 @@ async def update_participant(
     else:
         raise HTTPException(status_code=500, detail="Failed to update participant")
 
-
 @router.delete("/admin/delete-participant/{participant_id}")
 async def delete_participant(request: Request, participant_id: str):
     """Delete a participant."""
@@ -168,6 +183,10 @@ async def delete_participant(request: Request, participant_id: str):
         return {"message": "Participant deleted successfully"}
     else:
         raise HTTPException(status_code=500, detail="Failed to delete participant")
+
+#endregion
+
+#region Admin - Countdown and Voting Control
 
 @router.post("/admin/set-countdown")
 async def set_countdown(request: Request, seconds: int = Form(...)):
