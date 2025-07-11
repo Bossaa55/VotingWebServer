@@ -163,4 +163,39 @@ async def delete_participant(request: Request, participant_id: str):
     else:
         raise HTTPException(status_code=500, detail="Failed to delete participant")
 
+@router.post("/admin/set-countdown")
+async def set_countdown(request: Request, seconds: int = Form(...)):
+    """Set the countdown time for voting."""
+    access_token = request.cookies.get("access_token")
+    if not access_token or not auth_utils.verify_token(access_token):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
+    if seconds <= 0:
+        raise HTTPException(status_code=400, detail="Countdown time must be positive")
+
+    db.set_setting("countdown_time", seconds)
+    from main import countdown_time
+    countdown_time = seconds
+    return {"message": "Countdown time set successfully", "countdown_time": countdown_time}
+
+@router.get("/admin/countdown-time")
+async def get_countdown_time():
+    """Get the current countdown time."""
+    countdown_time = db.get_setting("countdown_time", 60)
+    return {"countdown_time": countdown_time}
+
+@router.post("/admin/toggle-countdown")
+async def toggle_countdown(request: Request):
+    """Toggle the countdown state."""
+    access_token = request.cookies.get("access_token")
+    if not access_token or not auth_utils.verify_token(access_token):
+        raise HTTPException(status_code=401, detail="Unauthorized access")
+
+    from main import is_countdown_on, countdown_time
+    is_countdown_on = not is_countdown_on
+
+    return {"message": "Countdown state toggled", "is_countdown_on": is_countdown_on, "countdown_time": countdown_time}
+
+
+
 #endregion
