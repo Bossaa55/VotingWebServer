@@ -173,9 +173,10 @@ class DatabaseManager:
             for row in results:
                 if isinstance(row, tuple) and len(row) >= 3:
                     result_list.append({
-                        "id": row[0], 
-                        "name": row[1], 
-                        "votes": row[2]
+                        "id": row[0],
+                        "name": row[1],
+                        "votes": row[2],
+                        "imageUrl": f"/api/img/{row[0]}"
                     })
             return result_list
         except Error as e:
