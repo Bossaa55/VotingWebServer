@@ -13,6 +13,7 @@ import { useParticipants } from "@/hooks/useParticipants";
 import { useModals } from "@/hooks/useModals";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useEffect } from "react";
+import { AdminNavBar } from "@/components/admin/AdminNavBar";
 
 export const AdminVotingProcess = () => {
   const {
@@ -84,7 +85,7 @@ export const AdminVotingProcess = () => {
   return (
     <div className="flex flex-col items-center h-screen bg-main">
       <BackgroundShapes />
-      <NavBar />
+      <AdminNavBar onBack={() => window.location.href = "/admin"} />
       <div className="grid w-full h-full grid-cols-2 gap-4 p-3 grid-rows-8 pt-18">
         <TotalVotesCard totalVotes={totalVotes} />
         <CountdownCard
