@@ -23,8 +23,8 @@ export const AdminNavBar = ({ onBack }: { onBack: () => void }) => {
   }
 
   return (
-    <div className="bg-nav h-16 p-2 fixed top-0 left-0 right-0 z-50 grid items-center">
-      <div className="container mx-auto flex justify-between items-center">
+    <div className="fixed top-0 left-0 right-0 z-50 grid items-center h-16 p-2 bg-nav">
+      <div className="container flex items-center justify-between mx-auto">
         <button onClick={onBack} className="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -62,11 +62,11 @@ export const AdminNavBar = ({ onBack }: { onBack: () => void }) => {
             </svg>
           </button>
           {isOpen && (
-            <div className="absolute right-0 mt-2 z-10 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
+            <div className="absolute right-0 z-10 mt-2 font-normal bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44">
               <div className="py-1">
                 <button
                   onClick={handleLogout}
-                  className="block px-4 py-2 flex items-center gap-3 text-sm text-red-500 hover:bg-gray-100"
+                  className="flex items-center block gap-3 px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

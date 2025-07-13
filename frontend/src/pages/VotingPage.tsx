@@ -67,12 +67,12 @@ export const VotingPage = () => {
   return isSplashVisible ? (
     <SplashScreen />
   ) : (
-    <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-gray-100 bg-main">
       <NavBar />
       <div className="pt-16">
         <BackgroundShapes />
-        <div className="text-center z-10 relative">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+        <div className="relative z-10 text-center">
+          <div className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 lg:grid-cols-3">
             {
               participants && participants.length > 0 ? (
                 participants.map((participant) => (
@@ -83,7 +83,7 @@ export const VotingPage = () => {
                   />
                 ))
               ) : (
-                <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center p-6 bg-white rounded-lg shadow-md">
+                <div className="col-span-1 p-6 text-center bg-white rounded-lg shadow-md sm:col-span-2 lg:col-span-3">
                   <p className="text-gray-500">No participants available at the moment.</p>
                 </div>
               )

@@ -24,15 +24,15 @@ export const ImageUpload = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-2">
-      <label className="block text-gray-700 self-start text-sm font-bold mb-2">
+    <div className="flex flex-col items-center w-full gap-2">
+      <label className="self-start block mb-2 text-sm font-bold text-gray-700">
         Imatge
       </label>
       {preview && (
         <img
           src={preview}
           alt="Preview"
-          className="w-32 h-32 object-cover rounded"
+          className="object-cover w-32 h-32 rounded"
         />
       )}
       <input
@@ -82,14 +82,14 @@ export const AdminManageCreatePage = () => {
       <div className="pt-16">
         <BackgroundShapes />
       </div>
-      <Card className="shadow-md w-96 z-10">
+      <Card className="z-10 shadow-md w-96">
         <CardHeader className="flex flex-col items-center justify-between gap-4">
           <CardTitle className="text-2xl font-semibold">
             Afegir Participant
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center gap-5 px-5 pt-3 mb-3 w-full">
+          <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center w-full gap-5 px-5 pt-3 mb-3">
             <Input
               type="text"
               name="Nom"
@@ -100,13 +100,13 @@ export const AdminManageCreatePage = () => {
             <div className="flex items-center justify-end w-full">
               <button
                 type="submit"
-                className="bg-violet-500 hover:bg-violet-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline flex items-center gap-2"
+                className="flex items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500 hover:bg-violet-700 focus:outline-none focus:shadow-outline"
               >
                 {isUploading ? (
                   <>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 animate-spin mr-2"
+                      className="w-4 h-4 mr-2 animate-spin"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"

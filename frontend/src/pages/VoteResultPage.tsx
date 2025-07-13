@@ -32,12 +32,12 @@ export const VoteResultPage = () => {
 
 
  return (
-    <div className="min-h-screen bg-gray-100 bg-main relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-gray-100 bg-main">
       <NavBar />
       <div className="pt-16">
         <BackgroundShapes />
       </div>
-      <div className="text-center z-10 fixed top-0 size-full flex items-center justify-center h-screen">
+      <div className="fixed top-0 z-10 flex items-center justify-center h-screen text-center size-full">
             {
               !participant ? (
                   <Spinner />
@@ -45,7 +45,7 @@ export const VoteResultPage = () => {
                 <Card className="shadow-md w-100">
                     <CardHeader className="flex flex-col items-center justify-between gap-4">
                         <CardTitle className="text-2xl font-semibold">Vot Exitós</CardTitle>
-                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="size-32 my-5">
+                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="my-5 size-32">
                           <circle fill="#05df72" cx="16" cy="16" r="14"/>
                           <circle fill="#05df72" className="bg-green-400 opacity-25" cx="16" cy="16" r="16"/>
                           <g fill="none" strokeWidth="1.5" stroke="#fff" transform="translate(4.37, 4.37) scale(0.97)">
@@ -54,12 +54,12 @@ export const VoteResultPage = () => {
                         </svg>
                         <CardDescription className="text-lg">
                           Has votat per:
-                          <p className="text-violet-500 font-medium text-xl">{participant?.name}</p>
+                          <p className="text-xl font-medium text-violet-500">{participant?.name}</p>
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center justify-center gap-1">
-                        <p className="text-muted-foreground text-lg">Gràcies per la teva participació!</p>
-                        <p className="text-muted-foreground text-lg">El teu vot ha estat enregistrat amb èxit.</p>
+                        <p className="text-lg text-muted-foreground">Gràcies per la teva participació!</p>
+                        <p className="text-lg text-muted-foreground">El teu vot ha estat enregistrat amb èxit.</p>
                     </CardContent>
                 </Card>
               )

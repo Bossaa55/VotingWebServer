@@ -7,7 +7,6 @@ import { ResetModal } from "@/components/admin/VotingProcess/modals/ResetModal";
 import { StartCountdownModal } from "@/components/admin/VotingProcess/modals/StartCountdownModal";
 import { StopModal } from "@/components/admin/VotingProcess/modals/StopModal";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
-import { NavBar } from "@/components/shared/NavBar";
 import { useCountdown } from "@/hooks/useCountdown";
 import { useParticipants } from "@/hooks/useParticipants";
 import { useModals } from "@/hooks/useModals";
