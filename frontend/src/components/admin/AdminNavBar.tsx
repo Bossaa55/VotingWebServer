@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const AdminNavBar = ({ onBack }: { onBack: () => void }) => {
+export const AdminNavBar = ({ onBack }: { onBack?: () => void | null}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -24,7 +24,8 @@ export const AdminNavBar = ({ onBack }: { onBack: () => void }) => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 grid items-center h-16 px-4 py-2 bg-nav">
-      <div className="flex items-center justify-between w-full mx-auto">
+      <div className={`flex items-center ${onBack == null ? "justify-end" : "justify-between"} w-full mx-auto`}>
+        {onBack && (
         <button onClick={onBack} className="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -41,6 +42,7 @@ export const AdminNavBar = ({ onBack }: { onBack: () => void }) => {
             />
           </svg>
         </button>
+        )}
         <div className="relative">
           <button
             className="flex items-center"

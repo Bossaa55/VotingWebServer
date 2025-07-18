@@ -84,7 +84,7 @@ export const AdminVotingProcess = () => {
   return (
     <div className="flex flex-col items-center h-screen bg-main">
       <BackgroundShapes />
-      <AdminNavBar onBack={() => window.location.href = "/admin"} />
+      <AdminNavBar onBack={() => { window.location.href = "/admin"; }} />
       <div className="grid w-full h-full grid-cols-2 gap-4 p-3 grid-rows-8 pt-18">
         <TotalVotesCard totalVotes={totalVotes} />
         <CountdownCard

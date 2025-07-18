@@ -1,3 +1,4 @@
+import { AdminNavBar } from "@/components/admin/AdminNavBar";
 import { IconCard } from "@/components/admin/IconCard";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
 import { NavBar } from "@/components/shared/NavBar";
@@ -13,7 +14,7 @@ export const AdminPage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-main">
       <BackgroundShapes />
-      <NavBar />
+      <AdminNavBar />
       <div className="flex flex-col items-center justify-center w-full h-full gap-4 px-4">
         <IconCard
           className="cursor-pointer"
