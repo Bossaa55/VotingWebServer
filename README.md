@@ -53,9 +53,7 @@ A modern, real-time voting web application built with FastAPI and React. Feature
    ```
    Edit the `.env` file with your database credentials and JWT secret:
    ```env
-   DATABASE_USER=your_db_user
    DATABASE_PASSWORD=your_db_password
-   DATABASE_NAME=voting_db
    JWT_SECRET_KEY=your_jwt_secret_key
    INITIAL_ADMIN_USERNAME=admin
    INITIAL_ADMIN_PASSWORD=admin_password
