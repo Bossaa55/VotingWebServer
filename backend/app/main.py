@@ -170,7 +170,7 @@ async def startup_event():
 
     # Start the countdown task
     asyncio.create_task(run_countdown())
-    asyncio.create_task(simulate_voting_process())
+    #asyncio.create_task(simulate_voting_process())
     logger.info("Countdown task started.")
 
 def set_countdown_time(seconds: int):

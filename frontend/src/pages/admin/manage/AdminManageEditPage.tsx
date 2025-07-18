@@ -136,7 +136,7 @@ export const AdminManageEditPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center p-4 h-dvh bg-main">
-      <AdminNavBar onBack={() => (window.location.href = "/admin/manage")} />
+      <AdminNavBar onBack={() => {window.location.href = "/admin/manage"}} />
       <div className="pt-16">
         <BackgroundShapes />
       </div>

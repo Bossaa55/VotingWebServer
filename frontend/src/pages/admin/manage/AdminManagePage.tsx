@@ -62,7 +62,7 @@ export const AdminManagePage = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gray-100 bg-main">
-      <AdminNavBar onBack={() => (window.location.href = "/admin")} />
+      <AdminNavBar onBack={() => {window.location.href = "/admin"}} />
       <div className="pt-16">
         <BackgroundShapes />
         {participants === null ? (

@@ -1,7 +1,6 @@
 import { AdminNavBar } from "@/components/admin/AdminNavBar";
 import { IconCard } from "@/components/admin/IconCard";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
-import { NavBar } from "@/components/shared/NavBar";
 
 export const AdminPage = () => {
   const goToManageParticipants = () => {
