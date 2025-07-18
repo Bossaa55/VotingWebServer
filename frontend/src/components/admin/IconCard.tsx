@@ -15,15 +15,15 @@ export const IconCard = ({
 }) => {
   return (
     <Card
-      className={`shadow-md w-96 z-10 ${className ?? ""}`}
+      className={`shadow-md md:w-96 w-full z-10 ${className ?? ""}`}
       onClick={onClick}
     >
-      <CardContent className="flex items-center gap-4 px-4 h-14">
-        <div className="flex items-center justify-center w-auto h-full p-2 rounded-full bg-violet-200">
+      <CardContent className="flex items-center h-auto gap-4 px-4 py-4">
+        <div className="flex items-center justify-center p-2 rounded-full size-14 bg-violet-200">
           {icon}
         </div>
         <div
-          className={`h-full flex flex-col items-start ${
+          className={`h-auto flex flex-col items-start ${
             description ? "justify-between" : "justify-center"
           } gap-1`}
         >

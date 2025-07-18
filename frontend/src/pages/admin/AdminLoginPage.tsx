@@ -28,10 +28,10 @@ export const AdminLoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-main">
+    <div className="flex flex-col items-center justify-center h-screen mx-4 bg-main">
       <BackgroundShapes />
       <NavBar />
-      <Card className="z-10 shadow-md w-96">
+      <Card className="z-10 w-full shadow-md sm:w-96">
         <CardHeader className="flex flex-col items-center justify-between gap-4">
           <CardTitle className="text-2xl font-semibold">Login</CardTitle>
         </CardHeader>

@@ -42,7 +42,7 @@ export const VoteResultPage = () => {
               !participant ? (
                   <Spinner />
               ) : (
-                <Card className="shadow-md w-100">
+                <Card className="w-full mx-4 shadow-md sm:w-100">
                     <CardHeader className="flex flex-col items-center justify-between gap-4">
                         <CardTitle className="text-2xl font-semibold">Vot Exitós</CardTitle>
                         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" className="my-5 size-32">

@@ -23,8 +23,8 @@ export const AdminNavBar = ({ onBack }: { onBack: () => void }) => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 grid items-center h-16 p-2 bg-nav">
-      <div className="container flex items-center justify-between mx-auto">
+    <div className="fixed top-0 left-0 right-0 z-50 grid items-center h-16 px-4 py-2 bg-nav">
+      <div className="flex items-center justify-between w-full mx-auto">
         <button onClick={onBack} className="flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"

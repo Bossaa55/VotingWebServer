@@ -150,7 +150,7 @@ export const AdminManageEditPage = () => {
                 <span className="sr-only">Loading...</span>
             </div>
         ) : (
-        <Card className="z-10 w-full shadow-md">
+        <Card className="z-10 w-full shadow-md sm:w-128">
           <CardHeader className="flex flex-col items-center justify-between gap-4">
             <CardTitle className="text-2xl font-semibold">
               {participant ? "Modificar Participant" : "Afegir Participant"}

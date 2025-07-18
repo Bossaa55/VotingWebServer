@@ -14,7 +14,7 @@ export const AdminPage = () => {
     <div className="flex flex-col items-center justify-center h-screen bg-main">
       <BackgroundShapes />
       <NavBar />
-      <div className="flex flex-col items-center justify-center w-full h-full gap-4">
+      <div className="flex flex-col items-center justify-center w-full h-full gap-4 px-4">
         <IconCard
           className="cursor-pointer"
           title="Administrar Participants"

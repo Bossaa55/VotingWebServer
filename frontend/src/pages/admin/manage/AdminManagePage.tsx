@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 const ParticipantCard = ({ participant }: { participant: Participant }) => {
   return (
-    <Card className="z-10 py-2 shadow-md w-96">
+    <Card className="z-10 w-full py-2 shadow-md md:w-96">
       <CardContent className="flex items-center h-24 gap-4 px-4">
         <img
           src={participant.imageUrl}
@@ -88,7 +88,7 @@ export const AdminManagePage = () => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col items-center gap-4 p-4">
             {participants != undefined &&
               participants.length > 0 &&
               participants.map((participant) => (

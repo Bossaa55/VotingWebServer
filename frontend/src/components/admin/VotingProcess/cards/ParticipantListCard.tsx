@@ -35,7 +35,7 @@ export const ParticipantListCard = ({
   participants: Participant[] | null;
 }) => {
   return (
-    <Card className="z-10 flex flex-col items-center h-full col-span-2 row-span-5 px-4 py-1 overflow-y-auto">
+    <Card className="z-10 flex flex-col items-center w-full h-full col-span-2 row-span-5 px-4 py-1 overflow-y-auto lg:w-224 place-self-center">
       {participants === null ? (
         <div className="flex items-center justify-center w-full h-full">
           <Spinner />

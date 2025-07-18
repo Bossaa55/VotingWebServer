@@ -10,7 +10,7 @@ export const CountdownCard = ({
 }) => {
   return (
     <Card
-      className="z-10 flex flex-col items-center justify-center row-span-2 px-4"
+      className="z-10 flex flex-col items-center justify-center w-full h-full row-span-2 px-4 place-self-start lg:w-100"
       onClick={handleClick}
     >
       {timeLeft < 0 ? (

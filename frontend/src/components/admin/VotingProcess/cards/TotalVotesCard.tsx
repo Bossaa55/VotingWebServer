@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 
 export const TotalVotesCard = ({ totalVotes }: { totalVotes: number }) => {
   return (
-    <Card className="z-10 flex flex-col items-center justify-center row-span-2 px-4">
+    <Card className="z-10 flex flex-col items-center justify-center w-full h-full row-span-2 px-4 place-self-end lg:w-100">
       {totalVotes < 0 ? (
         <Spinner />
       ) : (
