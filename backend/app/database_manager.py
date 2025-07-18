@@ -23,7 +23,7 @@ class DatabaseManager:
             port = int(os.getenv('DATABASE_PORT', '3306'))
             user = 'root'
             password = os.getenv('DATABASE_PASSWORD', '')
-            database = os.getenv('DATABASE_NAME', 'voting_db')
+            database = 'voting_db'
 
 
             while not self.connection:

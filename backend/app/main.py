@@ -17,13 +17,12 @@ from app.routers import api
 from app.routers import auth
 from .database_manager import DatabaseManager
 
-DATABASE_USER = os.getenv("DATABASE_USER", None)
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
 INITIAL_ADMIN_USERNAME = os.getenv("INITIAL_ADMIN_USERNAME", None)
 INITIAL_ADMIN_PASSWORD = os.getenv("INITIAL_ADMIN_PASSWORD", None)
 
-if not DATABASE_USER or not DATABASE_PASSWORD:
-    raise ValueError("DATABASE_USER and DATABASE_PASSWORD environment variables must be set.")
+if not DATABASE_PASSWORD:
+    raise ValueError("DATABASE_PASSWORD environment variables must be set.")
 
 logger = Logger()
 app = FastAPI()
