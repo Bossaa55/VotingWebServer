@@ -12,7 +12,7 @@ export const AdminLoginPage = () => {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
 
-    const response = await fetch(`/auth/login/`, {
+    const response = await fetch(`/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
