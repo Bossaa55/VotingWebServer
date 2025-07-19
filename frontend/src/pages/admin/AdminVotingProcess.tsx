@@ -88,8 +88,9 @@ export const AdminVotingProcess = () => {
       <div className="grid w-full h-full grid-cols-2 gap-4 p-3 grid-rows-8 pt-18">
         <TotalVotesCard totalVotes={totalVotes} />
         <CountdownCard
-          handleClick={() => setIsCountdownModalOpen(true)}
+          handleClick={() => setIsCountdownModalOpen(!isRunning)}
           timeLeft={timeLeft}
+          isRunning={isRunning}
         />
         <ParticipantListCard participants={participants} />
         <BottomButtons

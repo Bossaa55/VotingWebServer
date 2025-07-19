@@ -197,7 +197,7 @@ export const AdminManageEditPage = () => {
                   </button>
                 <button
                   type="submit"
-                  className="items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500"
+                  className="flex items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500"
                 >
                   {isUploading ? (
                     <>
