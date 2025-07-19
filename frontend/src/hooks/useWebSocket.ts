@@ -9,7 +9,7 @@ export const useWebSocket = (
   useEffect(() => {
     const subscribeToParticipants = () => {
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const backendHost = "localhost:8000";
+      const backendHost = window.location.host;
       const wsUrl = `${protocol}//${backendHost}/api/admin/subscribe-participants`;
       const ws = new WebSocket(wsUrl);
 
