@@ -81,6 +81,7 @@ async def get_image(id: str):
     image_path = Path("/data/images") / f"{id}.jpg"
     if image_path.is_file():
         return FileResponse(image_path)
-    raise HTTPException(status_code=404, detail="Image not found")
+    else:
+        return FileResponse("/data/images/default.svg")
 
 #endregion
