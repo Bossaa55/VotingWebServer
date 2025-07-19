@@ -46,7 +46,7 @@ export const VotingCard = ({
           <img
             src={participant.imageUrl}
             alt="Contestant"
-            className="w-24 h-24 mr-4 rounded-full"
+            className="object-cover mr-4 rounded-full size-24 aspect-square"
           />
         </CardHeader>
         <CardContent>
