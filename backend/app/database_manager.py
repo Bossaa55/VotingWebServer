@@ -17,43 +17,54 @@ class DatabaseManager:
         """
         self.connection = None
 
+        while not self._ensure_connection():
+            print("Failed to connect to the database, retrying in 5 seconds...")
+            time.sleep(5)
+
+    def _connect(self):
+        """Internal method to establish database connection."""
+        host = os.getenv('DATABASE_HOST', 'mysql')
+        port = int(os.getenv('DATABASE_PORT', '3306'))
+        user = 'root'
+        password = os.getenv('DATABASE_PASSWORD', '')
+        database = 'voting_db'
+
+
         try:
-            # Get connection parameters from environment variables
-            host = os.getenv('DATABASE_HOST', 'mysql')
-            port = int(os.getenv('DATABASE_PORT', '3306'))
-            user = 'root'
-            password = os.getenv('DATABASE_PASSWORD', '')
-            database = 'voting_db'
-
-
-            while not self.connection:
-                print(f"Connecting to MySQL at {host}:{port} as user {user} with database {database}")
-                try:
-                    self.connection = mysql.connector.connect(
-                        host=host,
-                        port=port,
-                        user=user,
-                        password=password,
-                        database=database,
-                        autocommit=True
-                    )
-                    if not self.connection:
-                        print("Failed to connect to the database, retrying in 5 seconds...")
-                        time.sleep(5)
-                except Error as e:
-                    print(f"Error connecting to MySQL: {e}")
-                    print("Retrying in 5 seconds...")
-                    time.sleep(5)
-
-            print(f"Connected to MySQL at {host}:{port} as user {user} with database {database}")
-
+            self.connection = mysql.connector.connect(
+                host=host,
+                port=port,
+                user=user,
+                password=password,
+                database=database,
+                autocommit=True
+            )
+            print(f"Connected to MySQL at {host}:{port}")
         except Error as e:
             print(f"Error connecting to MySQL: {e}")
             self.connection = None
 
+    def _ensure_connection(self):
+        """Ensure the database connection is alive, reconnect if necessary."""
+        try:
+            if self.connection and self.connection.is_connected():
+                # Test the connection with a simple query
+                cursor = self.connection.cursor()
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+                cursor.close()
+                return True
+        except Error:
+            pass
+
+        # Connection is dead or doesn't exist, reconnect
+        print("Connection lost, attempting to reconnect...")
+        self._connect()
+        return self.connection is not None
+
     def close(self):
         """Close the database connection."""
-        if self.connection and self.connection.is_connected():
+        if self.connection:
             self.connection.close()
             print("Database connection closed.")
 
@@ -149,7 +160,7 @@ class DatabaseManager:
         Returns:
             List of dictionaries with participant info and vote counts, or None if error
         """
-        if not self.connection or not self.connection.is_connected():
+        if not self.connection:
             print("Database not connected.")
             return None
 
@@ -189,7 +200,7 @@ class DatabaseManager:
         Returns:
             True if votes were reset successfully, False otherwise
         """
-        if not self.connection or not self.connection.is_connected():
+        if not self.connection:
             print("Database not connected.")
             return False
 
@@ -347,7 +358,7 @@ class DatabaseManager:
 
     def authenticate_user(self, username: str, password: str) -> Optional[bool]:
         """Authenticate user."""
-        if not self.connection or not self.connection.is_connected():
+        if not self._ensure_connection():
             print("Database not connected.")
             return None
 
@@ -368,7 +379,7 @@ class DatabaseManager:
 
     def create_user(self, username, password: str) -> bool:
         """Create a new user in the database."""
-        if not self.connection or not self.connection.is_connected():
+        if not self.connection:
             print("Database not connected.")
             return False
 
@@ -391,7 +402,7 @@ class DatabaseManager:
 
     def get_users_count(self) -> int:
         """Get the count of users in the database."""
-        if not self.connection or not self.connection.is_connected():
+        if not self.connection:
             print("Database not connected.")
             return 0
 
@@ -429,7 +440,7 @@ class DatabaseManager:
         Returns:
             The value of the setting or default_value if not found
         """
-        if not self.connection or not self.connection.is_connected():
+        if not self.connection:
             print("Database not connected.")
             return default_value
 
@@ -458,7 +469,7 @@ class DatabaseManager:
         Returns:
             True if the setting was set successfully, False otherwise
         """
-        if not self.connection or not self.connection.is_connected():
+        if not self.connection:
             print("Database not connected.")
             return False
 
