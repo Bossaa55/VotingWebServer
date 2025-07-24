@@ -11,7 +11,7 @@ export const AdminPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-main">
+    <div className="flex flex-col items-center justify-center h-dvh bg-main">
       <BackgroundShapes />
       <AdminNavBar />
       <div className="flex flex-col items-center justify-center w-full h-full gap-4 px-4">

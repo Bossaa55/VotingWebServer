@@ -3,7 +3,7 @@ export const BackgroundShapes = () => {
     <>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="fixed bottom-0 left-0 z-0 h-auto w-45"
+        className="fixed bottom-0 left-0 z-0 w-auto sm:h-auto h-76 sm:w-45"
         viewBox="0 0 26.728 62.941"
       >
         <path
@@ -13,7 +13,7 @@ export const BackgroundShapes = () => {
       </svg>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="fixed bottom-0 right-0 z-0 h-auto w-45"
+        className="fixed bottom-0 right-0 z-0 w-auto h-64 sm:h-auto sm:w-45"
         viewBox="0 0 27.764 43.413"
       >
         <path
@@ -23,7 +23,7 @@ export const BackgroundShapes = () => {
       </svg>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="fixed left-0 z-0 h-auto top-10 w-45"
+        className="fixed left-0 z-0 w-auto h-54 sm:h-auto top-10 sm:w-45"
         viewBox="0 0 37.908 45.464"
       >
         <path
@@ -33,7 +33,7 @@ export const BackgroundShapes = () => {
       </svg>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="fixed right-0 z-0 h-auto top-10 w-35"
+        className="fixed right-0 z-0 w-auto h-24 sm:h-auto top-10 sm:w-35"
         viewBox="0 0 21.117 13.82"
       >
         <path

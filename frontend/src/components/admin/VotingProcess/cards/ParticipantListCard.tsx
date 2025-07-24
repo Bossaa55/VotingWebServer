@@ -11,7 +11,7 @@ const ParticipantItem = ({ participant, position }: { participant: Participant, 
         </div>
         <div className="shrink-0">
           <img
-            className="w-8 h-8 rounded-full"
+            className="object-cover w-8 h-8 rounded-full aspect-square"
             src={participant.imageUrl}
             alt={participant.name}
           />

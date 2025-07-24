@@ -77,7 +77,7 @@ export const AdminManageCreatePage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen mx-4 bg-main">
+    <div className="flex flex-col items-center justify-center mx-4 h-dvh bg-main">
       <AdminNavBar onBack={() => {window.location.href = "/admin/manage"}} />
       <div className="pt-16">
         <BackgroundShapes />

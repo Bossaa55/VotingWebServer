@@ -67,7 +67,7 @@ export const VotingPage = () => {
   return isSplashVisible ? (
     <SplashScreen />
   ) : (
-    <div className="relative min-h-screen overflow-hidden bg-gray-100 bg-main">
+    <div className="relative overflow-hidden bg-gray-100 bg-main">
       <NavBar />
       <div className="pt-16">
         <BackgroundShapes />

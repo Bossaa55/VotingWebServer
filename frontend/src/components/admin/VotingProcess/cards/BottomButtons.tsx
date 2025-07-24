@@ -14,7 +14,7 @@ export const BottomButtons = ({
   stopButtonClick,
 }: BottomButtonsProps) => {
   return (
-    <Card className="z-10 grid items-center w-full grid-cols-3 col-span-2 gap-3 px-4 sm:w-128 place-self-center">
+    <Card className="z-10 grid items-center w-full grid-cols-3 col-span-2 gap-3 px-4 py-3 sm:w-128 place-self-center">
       {isRunning ? (
         <button
           className="w-full col-span-3 py-2 text-white bg-red-500 rounded hover:bg-blue-600"

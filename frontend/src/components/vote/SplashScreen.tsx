@@ -16,7 +16,7 @@ export const SplashScreen = () => {
                 }
             `}
       </style>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-main">
+      <div className="flex flex-col items-center justify-center h-dvh bg-main">
         <img
           src="/img/logo_juventut.svg"
           alt="Logo"
