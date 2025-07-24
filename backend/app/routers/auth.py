@@ -1,9 +1,11 @@
 from datetime import timedelta
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from app import auth_utils
+from app import database, database_manager
 
 
 router = APIRouter()
@@ -13,14 +15,12 @@ class LoginRequest(BaseModel):
     password: str
 
 @router.post("/login")
-async def login(login_data: LoginRequest, response: Response):
+async def login(login_data: LoginRequest, response: Response, db: Session = Depends(database.get_db)):
     """
     Endpoint to handle user login.
     This is a placeholder and should be replaced with actual authentication logic.
     """
-    from app.main import db
-
-    if not db.authenticate_user(login_data.username, login_data.password):
+    if not database_manager.authenticate_user(db, login_data.username, login_data.password):
         return JSONResponse(status_code=401, content={"message": "Invalid username or password"})
 
     access_token_expires = timedelta(minutes=auth_utils.ACCESS_TOKEN_EXPIRE_MINUTES)

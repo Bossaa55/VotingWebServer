@@ -1,11 +1,13 @@
 import asyncio
 import random
+
 from app.logger import Logger
 import os
 from pathlib import Path
+from sqlalchemy.orm import Session
 from typing import Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -15,7 +17,7 @@ import uuid
 
 from app.routers import api
 from app.routers import auth
-from .database_manager import DatabaseManager
+from app import database, database_manager
 
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
 INITIAL_ADMIN_USERNAME = os.getenv("INITIAL_ADMIN_USERNAME", None)
@@ -26,9 +28,8 @@ if not DATABASE_PASSWORD:
 
 logger = Logger()
 app = FastAPI()
-db = DatabaseManager()
 
-countdown_time = int(db.get_setting("countdown_time", 60))
+countdown_time = 60
 is_countdown_on = False
 
 frontend_build = Path(__file__).parent / "frontend"
@@ -64,7 +65,7 @@ if frontend_build.exists():
 
 
 @app.get("/")
-async def serve_react_app(request: Request, response: Response):
+async def serve_react_app(request: Request, response: Response, db: Session = Depends(database.get_db)):
     """Serve the React app's index.html and set session cookie."""
     if is_countdown_on:
         return RedirectResponse(url="/vote", status_code=302)
@@ -76,7 +77,7 @@ async def serve_react_app(request: Request, response: Response):
         file_response = FileResponse(frontend_build / "index.html")
         file_response.set_cookie(key="session_id", value=session_id, httponly=True)
         return file_response
-    elif db.session_voted(session_id):
+    elif database_manager.session_voted(db, session_id):
         return RedirectResponse(url="/voteresult", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
@@ -96,7 +97,7 @@ async def serve_admin_routes(request: Request, path: str = ""):
     return FileResponse(frontend_build / "index.html")
 
 @app.get("/vote")
-async def serve_vote(request: Request):
+async def serve_vote(request: Request, db: Session = Depends(database.get_db)):
     """Serve the voting page."""
     if is_countdown_on is False:
         return RedirectResponse(url="/", status_code=302)
@@ -109,7 +110,7 @@ async def serve_vote(request: Request):
         file_response.set_cookie(key="session_id", value=session_id, httponly=True)
         return file_response
 
-    vote_info = db.get_vote_info(session_id)
+    vote_info = database_manager.get_vote_info(db, session_id)
 
     if vote_info:
         return RedirectResponse(url="/voteresult", status_code=302)
@@ -117,7 +118,7 @@ async def serve_vote(request: Request):
     return FileResponse(frontend_build / "index.html")
 
 @app.get("/voteresult")
-async def serve_voteresult(request: Request, path: str = ""):
+async def serve_voteresult(request: Request, path: str = "", db: Session = Depends(database.get_db)):
     """Handle admin routes with authentication check."""
     if is_countdown_on is False:
         return RedirectResponse(url="/", status_code=302)
@@ -127,7 +128,7 @@ async def serve_voteresult(request: Request, path: str = ""):
     if not session_id:
         return RedirectResponse(url="/", status_code=302)
 
-    vote_info = db.get_vote_info(session_id)
+    vote_info = database_manager.get_vote_info(db, session_id)
     if not vote_info:
         return RedirectResponse(url="/", status_code=302)
 
@@ -135,38 +136,45 @@ async def serve_voteresult(request: Request, path: str = ""):
 
 async def run_countdown():
     global is_countdown_on, countdown_time
-    while True:
-        if is_countdown_on:
-            countdown_time -= 1
-            if countdown_time <= 0:
-                is_countdown_on = False
-                countdown_time = int(db.get_setting("countdown_time", 60))
-        await asyncio.sleep(1)
+
+    with database.SessionLocal() as db:
+        while True:
+            if is_countdown_on:
+                countdown_time -= 1
+                if countdown_time <= 0:
+                    is_countdown_on = False
+                    countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
+            await asyncio.sleep(1)
 
 async def simulate_voting_process():
     """Simulate the voting process for testing purposes."""
     global is_countdown_on
-    # Get all participants
-    participants = db.get_participants()
-    if not participants:
-        print("No participants found.")
-        return
 
-    while True:
-        while is_countdown_on:
-            session_id = str(uuid.uuid4())
-            db.record_vote(session_id, participants[random.randint(0,len(participants)-1)]["id"])
-            await asyncio.sleep(0.01 * random.randint(0,50))  # Simulate a delay between votes
-        await asyncio.sleep(1)
+    with database.SessionLocal() as db:
+        # Get all participants
+        participants = database_manager.get_participants(db)
+        if not participants:
+            print("No participants found.")
+            return
+
+        while True:
+            while is_countdown_on:
+                session_id = str(uuid.uuid4())
+                database_manager.record_vote(db, session_id, participants[random.randint(0,len(participants)-1)]["id"])
+                await asyncio.sleep(0.01 * random.randint(0,50))  # Simulate a delay between votes
+            await asyncio.sleep(1)
 
 @app.on_event("startup")
 async def startup_event():
-    #Create initial admin user if it doesn't exist
-    if db.get_users_count() == 0:
-        if not INITIAL_ADMIN_USERNAME or not INITIAL_ADMIN_PASSWORD:
-            raise ValueError("INITIAL_ADMIN_USERNAME and INITIAL_ADMIN_PASSWORD environment variables must be set.")
-        db.create_user(INITIAL_ADMIN_USERNAME, INITIAL_ADMIN_PASSWORD)
-        logger.info(f"Created initial admin user: {INITIAL_ADMIN_USERNAME}")
+    with database.SessionLocal() as db:
+        countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
+
+        #Create initial admin user if it doesn't exist
+        if database_manager.get_users_count(db) == 0:
+            if not INITIAL_ADMIN_USERNAME or not INITIAL_ADMIN_PASSWORD:
+                raise ValueError("INITIAL_ADMIN_USERNAME and INITIAL_ADMIN_PASSWORD environment variables must be set.")
+            database_manager.create_user(db, INITIAL_ADMIN_USERNAME, INITIAL_ADMIN_PASSWORD)
+            logger.info(f"Created initial admin user: {INITIAL_ADMIN_USERNAME}")
 
     # Start the countdown task
     asyncio.create_task(run_countdown())
@@ -176,7 +184,8 @@ async def startup_event():
 def set_countdown_time(seconds: int):
     global countdown_time
     countdown_time = seconds
-    db.set_setting("countdown_time", seconds)
+    with database.SessionLocal() as db:
+        database_manager.set_setting(db, "countdown_time", seconds)
     logger.info(f"Countdown time set to: {countdown_time}")
 
 def set_is_countdown_on(state: bool):

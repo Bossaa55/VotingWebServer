@@ -1,21 +1,21 @@
 
 import asyncio
 from pathlib import Path
+from sqlalchemy.orm import Session
 import uuid
-from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, WebSocket, WebSocketDisconnect
 
 from app import auth_utils
-from app.database_manager import DatabaseManager
+from app import database, database_manager
 from app.logger import Logger
 
 logger = Logger()
 router = APIRouter()
-db = DatabaseManager()
 
 #region Admin - Vote Results and Monitoring
 
 @router.get("/vote-results")
-async def get_vote_results(request: Request):
+async def get_vote_results(request: Request, db: Session = Depends(database.get_db)):
     """Get current vote results."""
     # You'll need to implement this in your database manager
     # For now, returning a placeholder
@@ -23,7 +23,7 @@ async def get_vote_results(request: Request):
     if not access_token or not auth_utils.verify_token(access_token):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
-    vote_results = db.get_vote_counts()
+    vote_results = database_manager.get_vote_counts(db)
     return {"participants": vote_results}
 
 #endregion
@@ -34,7 +34,8 @@ async def get_vote_results(request: Request):
 async def add_participant(
     request: Request,
     name: str = Form(...),
-    image: UploadFile = File(...)
+    image: UploadFile = File(...),
+    db: Session = Depends(database.get_db)
 ):
     """Add a new participant with an image file."""
     access_token = request.cookies.get("access_token")
@@ -52,7 +53,7 @@ async def add_participant(
     with image_path.open("wb") as f:
         f.write(await image.read())
 
-    success = db.add_participant(id, name)
+    success = database_manager.add_participant(db, id, name)
     if success:
         return {"message": "Participant added successfully"}
     else:
@@ -63,7 +64,8 @@ async def update_participant(
     request: Request,
     participant_id: str = Form(...),
     name: str = Form(...),
-    image: UploadFile = File(None)
+    image: UploadFile = File(None),
+    db: Session = Depends(database.get_db)
 ):
     """Update an existing participant's details."""
     access_token = request.cookies.get("access_token")
@@ -73,7 +75,7 @@ async def update_participant(
     if not participant_id:
         raise HTTPException(status_code=400, detail="Participant ID is required")
 
-    if db.get_participant(participant_id) is None:
+    if database_manager.get_participant(db, participant_id) is None:
         raise HTTPException(status_code=404, detail="Participant not found")
 
     if not name:
@@ -86,14 +88,14 @@ async def update_participant(
         with image_path.open("wb") as f:
             f.write(await image.read())
 
-    success = db.update_participant(participant_id, name)
+    success = database_manager.update_participant(db, participant_id, name)
     if success:
         return {"message": "Participant updated successfully"}
     else:
         raise HTTPException(status_code=500, detail="Failed to update participant")
 
 @router.delete("/delete-participant/{participant_id}")
-async def delete_participant(request: Request, participant_id: str):
+async def delete_participant(request: Request, participant_id: str, db: Session = Depends(database.get_db)):
     """Delete a participant."""
     access_token = request.cookies.get("access_token")
     if not access_token or not auth_utils.verify_token(access_token):
@@ -102,7 +104,7 @@ async def delete_participant(request: Request, participant_id: str):
     if not participant_id:
         raise HTTPException(status_code=400, detail="Participant ID is required")
 
-    success = db.delete_participant(participant_id)
+    success = database_manager.delete_participant(db, participant_id)
     if success:
         image_path = Path("/data/images") / f"{participant_id}.jpg"
         if image_path.is_file():
@@ -116,7 +118,7 @@ async def delete_participant(request: Request, participant_id: str):
 #region Admin - Countdown and Voting Control
 
 @router.post("/set-countdown")
-async def set_countdown(request: Request, seconds: int = Form(...)):
+async def set_countdown(request: Request, seconds: int = Form(...), db: Session = Depends(database.get_db)):
     """Set the countdown time for voting."""
     access_token = request.cookies.get("access_token")
     if not access_token or not auth_utils.verify_token(access_token):
@@ -125,15 +127,15 @@ async def set_countdown(request: Request, seconds: int = Form(...)):
     if seconds <= 0:
         raise HTTPException(status_code=400, detail="Countdown time must be positive")
 
-    db.set_setting("countdown_time", seconds)
+    database_manager.set_setting(db, "countdown_time", seconds)
     from app.main import set_countdown_time
     set_countdown_time(seconds)
     return {"message": "Countdown time set successfully", "countdown_time": seconds}
 
 @router.get("/countdown-time")
-async def get_countdown_time():
+async def get_countdown_time(db: Session = Depends(database.get_db)):
     """Get the current countdown time."""
-    countdown_time = db.get_setting("countdown_time", 60)
+    countdown_time = database_manager.get_setting(db, "countdown_time", 60)
     return {"countdown_time": countdown_time}
 
 @router.post("/toggle-countdown")
@@ -155,13 +157,13 @@ async def is_countdown_on():
     return {"is_countdown_on": get_is_countdown_on(), "countdown_time": get_countdown_time()}
 
 @router.post("/reset-votes")
-async def reset_votes(request: Request):
+async def reset_votes(request: Request, db: Session = Depends(database.get_db)):
     """Reset all votes."""
     access_token = request.cookies.get("access_token")
     if not access_token or not auth_utils.verify_token(access_token):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
-    db.reset_votes()
+    database_manager.reset_votes(db)
     return {"message": "Votes reset successfully"}
 
 @router.websocket("/subscribe-participants")
@@ -174,12 +176,13 @@ async def subscribe_participants(websocket: WebSocket):
         while True:
             send_updates = get_is_countdown_on()
             while send_updates:
-                vote_results = db.get_vote_counts()
-                if previous_participants != vote_results:
-                    previous_participants = vote_results
-                    await websocket.send_json({"participants": vote_results, "countdown_time": get_countdown_time()})
-                await asyncio.sleep(0.01)  # Use asyncio.sleep instead of time.sleep
-                send_updates = get_is_countdown_on()
+                with database.SessionLocal() as db:
+                    vote_results = database_manager.get_vote_counts(db)
+                    if previous_participants != vote_results:
+                        previous_participants = vote_results
+                        await websocket.send_json({"participants": vote_results, "countdown_time": get_countdown_time()})
+                    await asyncio.sleep(0.01)
+                    send_updates = get_is_countdown_on()
             await asyncio.sleep(1)
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected")
