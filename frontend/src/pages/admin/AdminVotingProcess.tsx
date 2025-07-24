@@ -78,6 +78,7 @@ export const AdminVotingProcess = () => {
     const success = await resetVotes();
     if (success) {
       setIsResetModalOpen(false);
+      fetchCountdownTime();
     }
   };
 

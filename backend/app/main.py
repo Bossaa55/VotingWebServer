@@ -166,6 +166,7 @@ async def simulate_voting_process():
 
 @app.on_event("startup")
 async def startup_event():
+    global countdown_time
     with database.SessionLocal() as db:
         countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
 
@@ -192,6 +193,13 @@ def set_is_countdown_on(state: bool):
     global is_countdown_on
     is_countdown_on = state
     logger.info(f"Countdown state set to: {is_countdown_on}")
+
+def reset_countdown():
+    global countdown_time, is_countdown_on
+    is_countdown_on = False
+    with database.SessionLocal() as db:
+        database_manager.set_setting(db, "countdown_time", 60)
+    logger.info("Countdown reset to default values.")
 
 def get_is_countdown_on() -> bool:
     """Get the current countdown state."""
