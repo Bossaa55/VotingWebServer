@@ -89,7 +89,7 @@ const VoteConfirmModal: React.FC<VoteConfirmModalProps> = ({
               <img
                 src={participant.imageUrl}
                 alt="Contestant"
-                className="w-24 h-24 rounded-full"
+                className="object-cover w-24 h-24 rounded-full aspect-square"
               />
               <p className="text-gray-700">
                 Estàs segur que vols votar a{" "}
