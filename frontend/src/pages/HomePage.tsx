@@ -16,9 +16,14 @@ export const HomePage = () => {
         <p className="text-lg text-gray-600">
             Torna més tard per veure els participants i votar.
         </p>
-        <a className="px-4 py-2 mt-4 text-white rounded bg-violet-500 hover:bg-violet-700" href="/">
+        <form action="/" method="get">
+          <button
+            type="submit"
+            className="px-4 py-2 mt-4 text-white rounded bg-violet-500 hover:bg-violet-700"
+          >
             Refrescar
-        </a>
+          </button>
+        </form>
       </div>
     </div>
   );
