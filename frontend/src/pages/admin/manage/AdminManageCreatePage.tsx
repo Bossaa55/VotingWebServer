@@ -100,7 +100,7 @@ export const AdminManageCreatePage = () => {
             <div className="flex items-center justify-end w-full">
               <button
                 type="submit"
-                className="flex items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500 hover:bg-violet-700 focus:outline-none focus:shadow-outline"
+                className="flex items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500 hover:bg-violet-600 focus:outline-none focus:shadow-outline"
               >
                 {isUploading ? (
                   <>

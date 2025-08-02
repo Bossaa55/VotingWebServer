@@ -22,13 +22,13 @@ export const StartCountdownModal = ({
       <div className="flex gap-4 mt-6">
         <button
           onClick={onClose}
-          className="w-full text-gray-600 bg-gray-200 rounded-md"
+          className="w-full text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
         >
           Cancelar
         </button>
         <button
           onClick={onConfirm}
-          className="w-full px-5 py-2 text-white rounded-md bg-violet-500"
+          className="w-full px-5 py-2 text-white rounded-md bg-violet-500 hover:bg-violet-600"
         >
           Confirmar
         </button>

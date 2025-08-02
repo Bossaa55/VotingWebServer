@@ -173,7 +173,7 @@ export const AdminManageEditPage = () => {
                   <button
                     type="button"
                     onClick={handleDelete}
-                    className="flex items-center gap-2 px-4 py-2 font-bold text-white bg-red-500 rounded"
+                    className="flex items-center gap-2 px-4 py-2 font-bold text-white bg-red-500 rounded hover:bg-red-600"
                   >
                     {isDeleting ? (
                       <>
@@ -197,7 +197,7 @@ export const AdminManageEditPage = () => {
                   </button>
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500"
+                  className="flex items-center gap-2 px-4 py-2 font-bold text-white rounded bg-violet-500 hover:bg-violet-600"
                 >
                   {isUploading ? (
                     <>

@@ -99,13 +99,13 @@ const VoteConfirmModal: React.FC<VoteConfirmModalProps> = ({
             <div className="flex gap-4 mt-6">
               <button
                 onClick={onClose}
-                className="w-full text-gray-600 bg-gray-200 rounded-md"
+                className="w-full text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleConfirm}
-                className="w-full px-5 py-2 text-white bg-purple-500 rounded-md"
+                className="w-full px-5 py-2 text-white bg-purple-500 rounded-md hover:bg-purple-600"
               >
                 {isVoting ? (
                   <span className="flex items-center justify-center">
