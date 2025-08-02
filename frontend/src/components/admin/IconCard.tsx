@@ -27,7 +27,7 @@ export const IconCard = ({
             description ? "justify-between" : "justify-center"
           } gap-1`}
         >
-          <h1 className="text-2xl font-semibold text-center">{title}</h1>
+          <h1 className="text-xl font-semibold text-center sm:text-2xl">{title}</h1>
           {description && (
             <p className="mb-0 text-sm text-center text-gray-500">
               {description}

@@ -28,7 +28,7 @@ export const AdminLoginPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen mx-4 bg-main">
+    <div className="flex flex-col items-center justify-center w-full mx-4 h-dvh bg-main">
       <BackgroundShapes />
       <NavBar />
       <Card className="z-10 w-full shadow-md sm:w-96">

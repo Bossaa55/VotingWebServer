@@ -32,12 +32,12 @@ export const VoteResultPage = () => {
 
 
  return (
-    <div className="relative min-h-screen overflow-hidden bg-gray-100 bg-main">
+    <div className="relative overflow-hidden bg-gray-100 h-dvh bg-main">
       <NavBar />
       <div className="pt-16">
         <BackgroundShapes />
       </div>
-      <div className="fixed top-0 z-10 flex items-center justify-center h-screen text-center size-full">
+      <div className="fixed top-0 z-10 flex items-center justify-center h-full text-center size-full">
             {
               !participant ? (
                   <Spinner />
