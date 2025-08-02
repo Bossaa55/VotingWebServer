@@ -13,7 +13,7 @@ export const AdminNavBar = ({ onBack }: { onBack?: () => void | null}) => {
       });
 
       if (response.ok) {
-        window.location.href = "/admin"
+        window.location.href = "/admin/login"
       } else {
         console.error("Logout failed");
       }

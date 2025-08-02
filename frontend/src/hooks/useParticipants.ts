@@ -18,6 +18,8 @@ export const useParticipants = () => {
             0
           )
         );
+      } else if (response.status === 401) {
+        window.location.href = '/admin/login';
       } else {
         console.error("Failed to fetch vote results");
         setParticipants([]);
@@ -35,6 +37,9 @@ export const useParticipants = () => {
       if (response.ok) {
         await fetchParticipantsStatus();
         return true;
+      } else if (response.status === 401) {
+        window.location.href = '/admin/login';
+        return false;
       } else {
         console.error("Failed to reset votes");
         return false;

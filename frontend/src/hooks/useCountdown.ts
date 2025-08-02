@@ -26,6 +26,8 @@ export const useCountdown = () => {
         const data = await response.json();
         setIsRunning(data.is_countdown_on);
         setTimeLeft(data.countdown_time);
+      } else if (response.status === 401) {
+        window.location.href = '/admin/login';
       } else {
         console.error("Failed to fetch countdown status");
       }
@@ -47,6 +49,9 @@ export const useCountdown = () => {
       if (response.ok) {
         setTimeLeft(seconds);
         return true;
+      } else if (response.status === 401) {
+        window.location.href = '/admin/login';
+        return false;
       } else {
         console.error("Failed to update countdown time");
         return false;
@@ -67,6 +72,9 @@ export const useCountdown = () => {
         setIsRunning(data.is_countdown_on);
         setTimeLeft(data.countdown_time);
         return true;
+      } else if (response.status === 401) {
+        window.location.href = '/admin/login';
+        return false;
       } else {
         console.error("Failed to toggle countdown");
         return false;
