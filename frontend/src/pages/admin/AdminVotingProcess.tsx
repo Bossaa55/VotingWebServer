@@ -48,7 +48,7 @@ export const AdminVotingProcess = () => {
   useWebSocket(setParticipants, setTimeLeft, setTotalVotes);
 
   useEffect(() => {
-    fetchCountdownTime();
+    //fetchCountdownTime();
     fetchParticipantsStatus();
     fetchCountdownStatus();
   }, []);

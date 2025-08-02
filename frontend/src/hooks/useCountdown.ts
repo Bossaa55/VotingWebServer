@@ -24,10 +24,8 @@ export const useCountdown = () => {
       const response = await fetch(`/api/admin/contdown-status`);
       if (response.ok) {
         const data = await response.json();
-        setIsRunning(data.is_scountdown_on);
-        if (data.is_scountdown_on) {
-          setTimeLeft(data.countdown_time);
-        }
+        setIsRunning(data.is_countdown_on);
+        setTimeLeft(data.countdown_time);
       } else {
         console.error("Failed to fetch countdown status");
       }

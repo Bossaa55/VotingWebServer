@@ -164,7 +164,7 @@ async def reset_votes(request: Request, db: Session = Depends(database.get_db)):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
     from app.main import reset_countdown
-    reset_countdown()
+    reset_countdown(db)
 
     database_manager.reset_votes(db)
     return {"message": "Votes reset successfully"}

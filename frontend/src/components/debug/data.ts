@@ -10,4 +10,8 @@ export const participants = [
     { id: "8", name: "Fiona Apple", description: "A musical genius.", imageUrl: "https://www.gravatar.com/avatar/8?d=identicon", votes: Math.floor(Math.random() * 100) },
     { id: "9", name: "George Clooney", description: "A charismatic actor.", imageUrl: "https://www.gravatar.com/avatar/9?d=identicon", votes: Math.floor(Math.random() * 100) },
     { id: "10", name: "Hannah Montana", description: "A multi-talented artist.", imageUrl: "https://www.gravatar.com/avatar/10?d=identicon", votes: Math.floor(Math.random() * 100) },
+    { id: "11", name: "George Clooney", description: "A charismatic actor.", imageUrl: "https://www.gravatar.com/avatar/9?d=identicon", votes: Math.floor(Math.random() * 100) },
+    { id: "12", name: "Hannah Montana", description: "A multi-talented artist.", imageUrl: "https://www.gravatar.com/avatar/10?d=identicon", votes: Math.floor(Math.random() * 100) },
+    { id: "13", name: "George Clooney", description: "A charismatic actor.", imageUrl: "https://www.gravatar.com/avatar/9?d=identicon", votes: Math.floor(Math.random() * 100) },
+    { id: "14", name: "Hannah Montana", description: "A multi-talented artist.", imageUrl: "https://www.gravatar.com/avatar/10?d=identicon", votes: Math.floor(Math.random() * 100) },
 ];

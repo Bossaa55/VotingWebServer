@@ -31,6 +31,7 @@ app = FastAPI()
 
 countdown_time = 60
 is_countdown_on = False
+countdown_task = None
 
 frontend_build = Path(__file__).parent / "frontend"
 
@@ -136,15 +137,16 @@ async def serve_voteresult(request: Request, path: str = "", db: Session = Depen
 
 async def run_countdown():
     global is_countdown_on, countdown_time
-
-    with database.SessionLocal() as db:
-        while True:
-            if is_countdown_on:
-                countdown_time -= 1
-                if countdown_time <= 0:
-                    is_countdown_on = False
-                    countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
-            await asyncio.sleep(1)
+    while is_countdown_on and countdown_time > 0:
+        countdown_time -= 1
+        await asyncio.sleep(1)
+    is_countdown_on = False
+    if countdown_time <= 0:
+        try:
+            with database.SessionLocal() as db:
+                countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
+        except Exception as e:
+            logger.error(f"Error in countdown task: {e}")
 
 async def simulate_voting_process():
     """Simulate the voting process for testing purposes."""
@@ -177,10 +179,8 @@ async def startup_event():
             database_manager.create_user(db, INITIAL_ADMIN_USERNAME, INITIAL_ADMIN_PASSWORD)
             logger.info(f"Created initial admin user: {INITIAL_ADMIN_USERNAME}")
 
-    # Start the countdown task
-    asyncio.create_task(run_countdown())
     #asyncio.create_task(simulate_voting_process())
-    logger.info("Countdown task started.")
+
 
 def set_countdown_time(seconds: int):
     global countdown_time
@@ -191,14 +191,20 @@ def set_countdown_time(seconds: int):
 
 def set_is_countdown_on(state: bool):
     global is_countdown_on
+    global countdown_task
     is_countdown_on = state
+    if is_countdown_on:
+        countdown_task = asyncio.create_task(run_countdown())
+    else:
+        if countdown_task:
+            countdown_task.cancel()
+            countdown_task = None
     logger.info(f"Countdown state set to: {is_countdown_on}")
 
-def reset_countdown():
+def reset_countdown(db: Session):
     global countdown_time, is_countdown_on
     is_countdown_on = False
-    with database.SessionLocal() as db:
-        database_manager.set_setting(db, "countdown_time", 60)
+    countdown_time = database_manager.get_setting(db, "countdown_time", 60)
     logger.info("Countdown reset to default values.")
 
 def get_is_countdown_on() -> bool:
