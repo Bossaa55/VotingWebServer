@@ -121,9 +121,6 @@ async def serve_vote(request: Request, db: Session = Depends(database.get_db)):
 @app.get("/voteresult")
 async def serve_voteresult(request: Request, path: str = "", db: Session = Depends(database.get_db)):
     """Handle admin routes with authentication check."""
-    if is_countdown_on is False:
-        return RedirectResponse(url="/", status_code=302)
-
     session_id = request.cookies.get("session_id")
 
     if not session_id:

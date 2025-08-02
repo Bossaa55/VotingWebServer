@@ -19,6 +19,8 @@ export const VotingPage = () => {
     imageUrl: string;
   }[]>([]);
 
+  const [hasVoted, setHasVoted] = useState(false);
+
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
@@ -45,7 +47,8 @@ export const VotingPage = () => {
         return;
       }
       resolve(true);
-      window.location.href = `/voteresult?p=${id}`;
+      setHasVoted(true);
+      window.location.href = '/voteresult';
     });
   };
 
@@ -67,25 +70,31 @@ export const VotingPage = () => {
   return isSplashVisible ? (
     <SplashScreen />
   ) : (
-    <div className="relative overflow-hidden bg-gray-100 bg-main">
+    <div className="relative overflow-hidden h-screen bg-gray-100 bg-main">
       <NavBar />
       <div className="pt-16">
         <BackgroundShapes />
         <div className="relative z-10 text-center">
           <div className="grid grid-cols-1 gap-6 p-4 sm:grid-cols-2 lg:grid-cols-3">
             {
-              participants && participants.length > 0 ? (
-                participants.map((participant) => (
-                  <VotingCard
-                    key={participant.id}
-                    participant={participant}
-                    onVote={() => setSelectedParticipant(participant)}
-                  />
-                ))
-              ) : (
+              hasVoted ? (
                 <div className="col-span-1 p-6 text-center bg-white rounded-lg shadow-md sm:col-span-2 lg:col-span-3">
-                  <p className="text-gray-500">No participants available at the moment.</p>
+                  <p className="text-gray-500">Ja has votat. Gràcies per la teva participació!</p>
                 </div>
+              ) : (
+                participants && participants.length > 0 ? (
+                  participants.map((participant) => (
+                    <VotingCard
+                      key={participant.id}
+                      participant={participant}
+                      onVote={() => setSelectedParticipant(participant)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-1 p-6 text-center bg-white rounded-lg shadow-md sm:col-span-2 lg:col-span-3">
+                    <p className="text-gray-500">No participants available at the moment.</p>
+                  </div>
+                )
               )
             }
           </div>
