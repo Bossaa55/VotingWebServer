@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./app /code/app
 
-CMD echo "Starting FastAPI with ${WORKERS_AMOUNT:-12} workers." && gunicorn -k uvicorn.workers.UvicornWorker app.main:app --workers ${WORKERS_AMOUNT:-12} --bind 0.0.0.0:80
+CMD uvicorn app.main:app --host 0.0.0.0 --port 80 --loop uvloop --http httptools
