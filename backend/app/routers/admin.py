@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, Uplo
 from app import auth_utils
 from app import database, database_manager
 from app.logger import Logger
+from app import utils
 
 logger = Logger()
 router = APIRouter()
@@ -45,13 +46,25 @@ async def add_participant(
     if not name or not image:
         raise HTTPException(status_code=400, detail="Invalid participant data")
 
+    if image.content_type:
+        if not image.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+    else:
+        raise HTTPException(status_code=400, detail="File must be an image")
+
+    image_data = await image.read()
+    optimized_image_data = utils.optimize_image(image_data)
+
+    if not optimized_image_data:
+        raise HTTPException(status_code=500, detail="Invalid image file")
+
     id = str(uuid.uuid4())
 
     image_dir = Path("/data/images")
     image_dir.mkdir(parents=True, exist_ok=True)
     image_path = image_dir / f"{id}.jpg"
     with image_path.open("wb") as f:
-        f.write(await image.read())
+        f.write(optimized_image_data)
 
     success = database_manager.add_participant(db, id, name)
     if success:
@@ -82,11 +95,23 @@ async def update_participant(
         raise HTTPException(status_code=400, detail="Name is required")
 
     if image:
+        if image.content_type:
+            if not image.content_type.startswith('image/'):
+                raise HTTPException(status_code=400, detail="File must be an image")
+        else:
+            raise HTTPException(status_code=400, detail="File must be an image")
+
+        image_data = await image.read()
+        optimized_image_data = utils.optimize_image(image_data)
+
+        if not optimized_image_data:
+            raise HTTPException(status_code=500, detail="Invalid image file")
+
         image_dir = Path("/data/images")
         image_dir.mkdir(parents=True, exist_ok=True)
         image_path = image_dir / f"{participant_id}.jpg"
         with image_path.open("wb") as f:
-            f.write(await image.read())
+            f.write(optimized_image_data)
 
     success = database_manager.update_participant(db, participant_id, name)
     if success:
