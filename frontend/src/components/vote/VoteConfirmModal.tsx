@@ -106,6 +106,7 @@ const VoteConfirmModal: React.FC<VoteConfirmModalProps> = ({
               <button
                 onClick={handleConfirm}
                 className="w-full px-5 py-2 text-white bg-purple-500 rounded-md hover:bg-purple-600"
+                {...(isVoting ? { disabled: true } : {})}
               >
                 {isVoting ? (
                   <span className="flex items-center justify-center">

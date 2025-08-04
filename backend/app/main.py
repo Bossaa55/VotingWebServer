@@ -161,7 +161,7 @@ def toggle_countdown() -> bool:
     if countdown_start_time == 0:
         countdown_start_time = time.time()
     else:
-        countdown_time = initial_countdown_time - int(time.time() - countdown_start_time)
+        countdown_time = countdown_time - int(time.time() - countdown_start_time)
         countdown_start_time = 0
     logger.info(f"Countdown state set to: {countdown_start_time != 0}")
     return countdown_start_time != 0
@@ -169,14 +169,15 @@ def toggle_countdown() -> bool:
 def reset_countdown(db: Session):
     global countdown_time, countdown_start_time
     countdown_start_time = 0
-    countdown_time = database_manager.get_setting(db, "countdown_time", 60)
+    initial_countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
+    countdown_time = initial_countdown_time
     logger.info("Countdown reset to default values.")
 
 def get_is_countdown_on() -> bool:
     """Get the current countdown state."""
     global countdown_start_time, initial_countdown_time, countdown_time
     if countdown_start_time != 0:
-        left = initial_countdown_time - int(time.time() - countdown_start_time)
+        left = countdown_time - int(time.time() - countdown_start_time)
         if left <= 0:
             countdown_start_time = 0
             countdown_time = initial_countdown_time
@@ -186,8 +187,8 @@ def get_countdown_time() -> int:
     """Get the current countdown time."""
     global countdown_time, countdown_start_time
     if countdown_start_time != 0:
-        left = initial_countdown_time - int(time.time() - countdown_start_time)
+        left = countdown_time - int(time.time() - countdown_start_time)
         if left <= 0:
             countdown_start_time = 0
             countdown_time = initial_countdown_time
-    return initial_countdown_time - int(time.time() - countdown_start_time) if countdown_start_time != 0 else countdown_time
+    return countdown_time - int(time.time() - countdown_start_time) if countdown_start_time != 0 else countdown_time
