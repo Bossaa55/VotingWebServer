@@ -1,7 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { VotingPage } from "./pages/VotingPage";
-import { VoteResultPage } from "./pages/VoteResultPage";
 import { AdminLoginPage } from "./pages/admin/AdminLoginPage";
 import { AdminPage } from "./pages/admin/AdminPage";
 import { AdminManagePage } from "./pages/admin/manage/AdminManagePage";
@@ -16,7 +15,6 @@ function App() {
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/vote" element={<VotingPage />} />
-            <Route path="/voteresult" element={<VoteResultPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/votingprocess" element={<AdminVotingProcess />} />

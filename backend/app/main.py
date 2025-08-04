@@ -78,8 +78,6 @@ async def serve_react_app(request: Request, response: Response, db: Session = De
         file_response = FileResponse(frontend_build / "index.html")
         file_response.set_cookie(key="session_id", value=session_id, httponly=True)
         return file_response
-    elif database_manager.session_voted(db, session_id):
-        return RedirectResponse(url="/voteresult", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
 
@@ -110,25 +108,6 @@ async def serve_vote(request: Request, db: Session = Depends(database.get_db)):
         file_response = FileResponse(frontend_build / "index.html")
         file_response.set_cookie(key="session_id", value=session_id, httponly=True)
         return file_response
-
-    vote_info = database_manager.get_vote_info(db, session_id)
-
-    if vote_info:
-        return RedirectResponse(url="/voteresult", status_code=302)
-
-    return FileResponse(frontend_build / "index.html")
-
-@app.get("/voteresult")
-async def serve_voteresult(request: Request, path: str = "", db: Session = Depends(database.get_db)):
-    """Handle admin routes with authentication check."""
-    session_id = request.cookies.get("session_id")
-
-    if not session_id:
-        return RedirectResponse(url="/", status_code=302)
-
-    vote_info = database_manager.get_vote_info(db, session_id)
-    if not vote_info:
-        return RedirectResponse(url="/", status_code=302)
 
     return FileResponse(frontend_build / "index.html")
 
