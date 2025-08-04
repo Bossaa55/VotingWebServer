@@ -170,10 +170,10 @@ async def toggle_countdown(request: Request):
     if not access_token or not auth_utils.verify_token(access_token):
         raise HTTPException(status_code=401, detail="Unauthorized access")
 
-    from app.main import set_is_countdown_on, is_countdown_on, countdown_time
-    set_is_countdown_on(not is_countdown_on)
+    from app.main import toggle_countdown, get_countdown_time
+    is_countdown_on = toggle_countdown()
 
-    return {"message": "Countdown state toggled", "is_countdown_on": not is_countdown_on, "countdown_time": countdown_time}
+    return {"message": "Countdown state toggled", "is_countdown_on": is_countdown_on, "countdown_time": get_countdown_time()}
 
 @router.get("/contdown-status")
 async def is_countdown_on():

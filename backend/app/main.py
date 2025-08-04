@@ -1,5 +1,6 @@
 import asyncio
 import random
+import time
 
 from app.logger import Logger
 import os
@@ -29,8 +30,10 @@ if not DATABASE_PASSWORD:
 logger = Logger()
 app = FastAPI()
 
+initial_countdown_time = 60
 countdown_time = 60
 is_countdown_on = False
+countdown_start_time = 0
 countdown_task = None
 
 frontend_build = Path(__file__).parent / "frontend"
@@ -68,7 +71,7 @@ if frontend_build.exists():
 @app.get("/")
 async def serve_react_app(request: Request, response: Response, db: Session = Depends(database.get_db)):
     """Serve the React app's index.html and set session cookie."""
-    if is_countdown_on:
+    if countdown_start_time != 0:
         return RedirectResponse(url="/vote", status_code=302)
 
     session_id = request.cookies.get("session_id")
@@ -98,7 +101,7 @@ async def serve_admin_routes(request: Request, path: str = ""):
 @app.get("/vote")
 async def serve_vote(request: Request, db: Session = Depends(database.get_db)):
     """Serve the voting page."""
-    if is_countdown_on is False:
+    if not get_is_countdown_on():
         return RedirectResponse(url="/", status_code=302)
 
     session_id = request.cookies.get("session_id")
@@ -111,22 +114,9 @@ async def serve_vote(request: Request, db: Session = Depends(database.get_db)):
 
     return FileResponse(frontend_build / "index.html")
 
-async def run_countdown():
-    global is_countdown_on, countdown_time
-    while is_countdown_on and countdown_time > 0:
-        countdown_time -= 1
-        await asyncio.sleep(1)
-    is_countdown_on = False
-    if countdown_time <= 0:
-        try:
-            with database.SessionLocal() as db:
-                countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
-        except Exception as e:
-            logger.error(f"Error in countdown task: {e}")
-
 async def simulate_voting_process():
     """Simulate the voting process for testing purposes."""
-    global is_countdown_on
+    global countdown_start_time
 
     with database.SessionLocal() as db:
         # Get all participants
@@ -136,7 +126,7 @@ async def simulate_voting_process():
             return
 
         while True:
-            while is_countdown_on:
+            while countdown_start_time != 0:
                 session_id = str(uuid.uuid4())
                 database_manager.record_vote(db, session_id, participants[random.randint(0,len(participants)-1)]["id"])
                 await asyncio.sleep(0.01 * random.randint(0,50))  # Simulate a delay between votes
@@ -144,10 +134,10 @@ async def simulate_voting_process():
 
 @app.on_event("startup")
 async def startup_event():
-    global countdown_time
+    global initial_countdown_time, countdown_time
     with database.SessionLocal() as db:
-        countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
-
+        initial_countdown_time = int(database_manager.get_setting(db, "countdown_time", 60))
+        countdown_time = initial_countdown_time
         #Create initial admin user if it doesn't exist
         if database_manager.get_users_count(db) == 0:
             if not INITIAL_ADMIN_USERNAME or not INITIAL_ADMIN_PASSWORD:
@@ -159,34 +149,45 @@ async def startup_event():
 
 
 def set_countdown_time(seconds: int):
-    global countdown_time
+    global countdown_time, initial_countdown_time
     countdown_time = seconds
+    initial_countdown_time = seconds
     with database.SessionLocal() as db:
         database_manager.set_setting(db, "countdown_time", seconds)
     logger.info(f"Countdown time set to: {countdown_time}")
 
-def set_is_countdown_on(state: bool):
-    global is_countdown_on
-    global countdown_task
-    is_countdown_on = state
-    if is_countdown_on:
-        countdown_task = asyncio.create_task(run_countdown())
+def toggle_countdown() -> bool:
+    global countdown_start_time, countdown_time
+    if countdown_start_time == 0:
+        countdown_start_time = time.time()
     else:
-        if countdown_task:
-            countdown_task.cancel()
-            countdown_task = None
-    logger.info(f"Countdown state set to: {is_countdown_on}")
+        countdown_time = initial_countdown_time - int(time.time() - countdown_start_time)
+        countdown_start_time = 0
+    logger.info(f"Countdown state set to: {countdown_start_time != 0}")
+    return countdown_start_time != 0
 
 def reset_countdown(db: Session):
-    global countdown_time, is_countdown_on
-    is_countdown_on = False
+    global countdown_time, countdown_start_time
+    countdown_start_time = 0
     countdown_time = database_manager.get_setting(db, "countdown_time", 60)
     logger.info("Countdown reset to default values.")
 
 def get_is_countdown_on() -> bool:
     """Get the current countdown state."""
-    return is_countdown_on
+    global countdown_start_time, initial_countdown_time, countdown_time
+    if countdown_start_time != 0:
+        left = initial_countdown_time - int(time.time() - countdown_start_time)
+        if left <= 0:
+            countdown_start_time = 0
+            countdown_time = initial_countdown_time
+    return countdown_start_time != 0
 
 def get_countdown_time() -> int:
     """Get the current countdown time."""
-    return countdown_time
+    global countdown_time, countdown_start_time
+    if countdown_start_time != 0:
+        left = initial_countdown_time - int(time.time() - countdown_start_time)
+        if left <= 0:
+            countdown_start_time = 0
+            countdown_time = initial_countdown_time
+    return initial_countdown_time - int(time.time() - countdown_start_time) if countdown_start_time != 0 else countdown_time

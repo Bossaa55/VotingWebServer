@@ -57,6 +57,10 @@ async def vote_info(request: Request, db: Session = Depends(database.get_db)):
 @router.post("/vote/{participant_id}")
 async def submit_vote(request: Request, participant_id: str, db: Session = Depends(database.get_db)):
     """Submit a vote for a participant."""
+    from app.main import get_is_countdown_on
+    if not get_is_countdown_on():
+        raise HTTPException(status_code=400, detail="Voting is not currently active")
+
     session_id = request.cookies.get("session_id")
     if not session_id:
         raise HTTPException(status_code=400, detail="Session ID not found")
