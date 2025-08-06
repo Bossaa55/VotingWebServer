@@ -61,6 +61,8 @@ A modern, real-time voting web application built with FastAPI and React. Feature
 
 3. **Build and run the application**
    ```bash
+   # Install the dependencies
+   ./install.sh
    # Build the frontend
    ./build.sh
 
