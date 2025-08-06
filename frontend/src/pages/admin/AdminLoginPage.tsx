@@ -2,8 +2,11 @@ import { Input } from "@/components/admin/Input";
 import { BackgroundShapes } from "@/components/shared/BackgroundShapes";
 import { NavBar } from "@/components/shared/NavBar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 
 export const AdminLoginPage = () => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
 
@@ -21,6 +24,8 @@ export const AdminLoginPage = () => {
     });
     if (!response.ok) {
       console.error("Failed to login");
+      const result = await response.json();
+      setErrorMessage(result.message || "Failed to login");
       return;
     }
 
@@ -52,6 +57,9 @@ export const AdminLoginPage = () => {
               placeholder="Enter your pasword"
               id="password"
             />
+            {errorMessage && (
+              <span className="text-red-500 text-sm font-bold self-end">{errorMessage}</span>
+            )}
             <div className="flex items-center justify-end w-full">
               <button
                 type="submit"
