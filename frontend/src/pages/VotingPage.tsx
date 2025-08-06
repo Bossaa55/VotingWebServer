@@ -88,10 +88,10 @@ const VoteResultCard = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center gap-1">
-        <p className="text-lg text-muted-foreground">
+        <p className="text-lg text-muted-foreground text-center">
           Gràcies per la teva participació!
         </p>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-lg text-muted-foreground text-center">
           El teu vot ha estat enregistrat amb èxit.
         </p>
       </CardContent>
